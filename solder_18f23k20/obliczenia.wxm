@@ -1,0 +1,427 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 13.04.2 ] */
+
+/* [wxMaxima: input   start ] */
+if numer#false then numer:false else numer:true;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+f:16e6/4;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr2: 256*110/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr1: 256^2*4*16/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr3: 256^2*1/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr0: 256^2*4/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+serial
+
+
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+baud:16e6/4/(n+1)=9600;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+solve( [baud],[n]);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+16e6/4/417;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+4.194e6/4/1;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+obliczenia oporu lcd podswietlenia
+
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+i: 0.8/22;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+obliczenie czasu tmr0 - dla klawiszy
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr0: 256*256*4/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr0: 256*256*16/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+wait kilka sekund tmr3
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr3: 256^2*8/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+czas oczekiwania ds18b20
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: comment start ]
+inicjacja
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr2: 240*8/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+pomiar 60us
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr2: 60*4/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+czas_oczekiwania_45us
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr2: 45*4/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+czas_oczekiwania_15us
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr2: 15*4/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+jeden_rozkaz: 3/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+lampka;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr4: 255*256*16/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+60*5*4/20e6;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+20 us
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr2: 15*1/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+czas_odbioru_ds: 480e-6+60e-6*(8+8+9*8);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+analoga obliczenia 
+
+12 bit
+
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+iloscMax : 2^12;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+2.45;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+i:2.45/iloscMax*1000;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+15e3*10e-6;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+1.203+4.8;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp(7);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k1: 0.650/4e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k1: 0.658/4.1e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k1: 0.913/5.9e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k1: 0.797/5.1e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k1: 0.750/4.8e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k1: 1.626/11.3e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k1: 0.797/5.1e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k1: 0.724/4.7e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k1: 0.8/5.2e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k1: 0.83/5.4e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k1: 0.85/5.6e-3;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+0.913/160;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+k:160;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+4096*i/134;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+556*i/k;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+543*i/k+1.326;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+100*i*1000;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+3000*619141/10^9;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+U(t):=0.0409*t- 0.0051;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+U(200);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u2(t):=distrib(U(t)*k/i);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u2(26);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u2(26)*i/k;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u2(t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u3(t):=distrib(u2(t)*0.5e6);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u3(t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u2(300);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u3(300)/5e5;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp(t):=24.472*t+0.1333;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp(4.452);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp2(t):=24.472/k*t+0.1333/k;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp2(t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp3(t):=(24.472/k*i*t+0.1333/k*i);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp2(10);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp33(t):=distrib(temp3(t)*500000 );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp33(t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+distrib(%);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp3(t);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp3(1421);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u2(150);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u2(180);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp4(t):= 54485 * t + 297;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp4(600)/5e5;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+obliczenia PWM
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+period: 1/f*256*16;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+wiec jest to najwiekszy mozliwy okres - odpada uzycie wewnetrznego generatora PWM
+
+pisze wlasny algorytm
+
+dokladnosc ustawien do 20ms - bo tyle odpowiada jednemu okresowi
+przepurzczam 2 okresy dla 2% PWM
+
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr4: 250*160/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+t_tmr3: 256^2*5/f;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+jaki blad wynika z niewlasciwego wzmocnienia
+
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+kk1: 134 ;
+kk2: 160 ;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp11(t):=(24.472/kk1*i*t+0.1333/kk1*i);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp22(t):=(24.472/kk2*i*t+0.1333/kk2*i);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp11(1500);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp22(1500);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+dla 178 stC  temp ref 31
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+u_proc: 0.810;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u_termo1: u_proc/kk1;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+u_termo2: u_proc/kk2;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp(u_termo1*1000);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+temp(u_termo2*1000);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+13*3;
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$
