@@ -63,3 +63,4 @@ dkms.conf
 *.HEX
 *.err
 *.O
+*.zip

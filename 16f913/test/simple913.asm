@@ -42,14 +42,26 @@ ISR_exit
 
     PAGESEL init
     goto init
-    include ../../libs/math_function.asm
+    include ../../libs/math_function_multiplication.asm
     include ../../libs/multiplication_16f_loop.asm
+    include ../../libs/math_function_div.asm
 
 ISR_timer0
     bcf INTCON,T0IF
     BANKSEL timer_l
     incf timer_l,f 
+    IFNDEF WDG_TEST
+     clrwdt ; this comment to be able to test WDG detection
+    ENDIF
+    BANKSEL count_to_test
+    movf count_to_test,w
+    SKPNZ 
+    goto  ISR_timer0_1
+
+    BANKSEL count_to_test
+    decf  count_to_test,f
     clrwdt
+ISR_timer0_1
     goto ISR_exit
 
     org 800h
@@ -75,17 +87,60 @@ init
 
 	movlw	b'11101000'
 	movwf	INTCON
-    
 
-    clear_memory  var1,0x5f
+
+    clear_memory  var1,0x5f ; here status_bits is cleared
+
+    BANKSEL var2
+    movlw  0
+    movwf  var2
+    ;detect that wdg timeout occurs if bit is not set = same
+    compare1byte_set_when_same  run_system_marker,  SFR_to_detect_WDG, status_bits, wdg_detected
+
+    BANKSEL status_bits
+    btfss  status_bits, wdg_detected
+    goto init2 
+
+
+    compare1byte_set_when_same  run_system_marker, wdg_timeout_marker, status_bits, wdg_detected2
+
+
+init2
     clear_memory 0xa0,10
     clear_memory var2, 30
+    
     ;end init
 
+    BANKSEL status_bits
+    ;run marked
+    bsf status_bits, run_system
+
+    BANKSEL SFR_to_detect_WDG
+    movlw   run_system_marker
+    movwf   SFR_to_detect_WDG
+
+    BANKSEL wdg_timeout_marker
+    movwf   wdg_timeout_marker
+
+    BANKSEL count_to_test
+    movlw   count_to_wdg_timeout
+    movwf  count_to_test
+
+    
 main 
 ;here are some "regression tests" 
 ;for multiplication different procedures
-    clrwdt
+    ;clrwdt
+    BANKSEL status_bits
+    btfss  status_bits, wdg_detected
+    goto main2
+    btfss  status_bits, wdg_detected2
+    goto main2
+
+    goto main_wdg_detected
+
+main2
+
     VARIABLE var3 = 0x20
     VARIABLE var4 = 0x45
     VARIABLE var5 = 3
@@ -107,6 +162,14 @@ main
     movlw  1 
     subwf  result_H,f
 
+
+    movel_2bytes  0x1010, operandl
+    rrf  operandl,F
+    rrf  operandh,f
+
+    movel_2bytes  0x0000, operandl 
+    rrf  operandl,f 
+    rrf operandl,f 
 
 
     movlw   var5
@@ -298,6 +361,7 @@ main
     compare2bytes 0x5b, 0x68, result_01, result_001, errors_sum_loop, 1
     nop
     
+main_wdg_detected
     movel_2bytes 0x4567, operandl
 
     movel_2bytes 0x18aa, number_l
@@ -310,8 +374,86 @@ main
     compare2bytes 0xa, 0xce, result_01, result_001, errors_sum_loop, 6
     nop
 
+
+    movel_2bytes  0x1020, number_l 
+    movel_2bytes  0x0003, operandl
+
+    macro_division_16f  number_h, number_l, operandl, result_lh, result_ll  
+
+    nop
+    compare2bytes    0x5, 0x60, result_lh, result_ll, errors_div, 0 
+    compare1byte     0x0 , number_l , errors_div, 0 ; reminder
+
+    nop
+    movel_2bytes  0xffff, number_l 
+    movel_2bytes  0x00ff, operandl
+
+    macro_division_16f  number_h, number_l, operandl, result_lh, result_ll  
+
+    nop
+    compare2bytes    0x1, 0x01, result_lh, result_ll, errors_div, 1 
+    compare1byte     0x0 , number_l , errors_div, 1 ; reminder
+
+    nop 
+
+
+    movel_2bytes  0xffff, number_l 
+    movel_2bytes  0x0001, operandl
+
+    macro_division_16f  number_h, number_l, operandl, result_lh, result_ll  
+
+    nop
+    compare2bytes    0xff, 0xff, result_lh, result_ll, errors_div, 2 
+    compare1byte     0x0 , number_l , errors_div, 2 ; reminder
+
+    nop
+    movel_2bytes  0x0005, number_l 
+    movel_2bytes  0x0002, operandl
+
+    nop
+    macro_division_16f  number_h, number_l, operandl, result_lh, result_ll 
+
+    nop
+    compare2bytes    0x00, 0x02, result_lh, result_ll, errors_div, 3
+    compare1byte     0x1 , number_l , errors_div, 3 ; reminder
+
+    nop
+
+    movel_2bytes  0x0005, number_l 
+    movel_2bytes  0x000a, operandl
+
+    macro_division_16f  number_h, number_l, operandl, result_lh, result_ll 
+
+    nop
+    compare2bytes    0x00, 0x00, result_lh, result_ll, errors_div, 4
+    compare1byte     0x05 , number_l , errors_div, 4 ; reminder
+    
+    nop
+
+    movel_2bytes  0x1101, number_l 
+    movel_2bytes  0x000d, operandl
+
+    macro_division_16f  number_h, number_l, operandl, result_lh, result_ll 
+
+    nop
+    compare2bytes    0x01, 0x4e, result_lh, result_ll, errors_div, 5
+    compare1byte     0x0b , number_l , errors_div, 5 ; reminder
+
+    nop
+
+    movel_2bytes  0xf120, number_l 
+    movel_2bytes  0x0078, operandl
+
+    PAGESEL  func_div_16bit_8bit
+    call func_div_16bit_8bit
+
+    nop
+    compare2bytes    0x02, 0x02, result_lh, result_ll, errors_div, 6
+    compare1byte     0x30 , number_l , errors_div, 6 ; reminder
+
+    nop
     compare2bytes 0, 0 , errors16bit, errors_sum_loop, status_bits, 0 
-    compare1byte  0, errors_mul_8bit, status_bits, 0 
+    compare2bytes  0, 0, errors_mul_8bit, errors_div,  status_bits, 0 
 
     PAGESEL led_off
     btfsc   led_green_port,led_green_pin

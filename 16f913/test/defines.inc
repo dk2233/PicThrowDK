@@ -39,8 +39,10 @@
 	errors_mul_8bit
 	errors16bit
 	errors_sum_loop
+	errors_div
 
 	status_bits 
+
 
 	endc
 	;common variables for all banks
@@ -75,7 +77,10 @@
 	B_low
 	B_high
 
+	count_to_test
+	wdg_timeout_marker
 
+errors
 
 	endc
 
@@ -89,3 +94,13 @@ led_red_port   equ  PORTA
 led_red_pin    equ 1
 
 ;status_bits bits 
+run_system equ 7
+wdg_detected  equ 6
+wdg_detected2 equ 5
+
+run_system_marker   equ 0x56
+SFR_to_detect_WDG	equ LCDDATA0
+
+count_to_wdg_timeout  equ .200
+
+;#define WDG_TEST
