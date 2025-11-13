@@ -13,10 +13,11 @@
 	__CONFIG _WDT_OFF & _MCLRE_ON & _DEBUG_ON & _IESO_ON  & _HS_OSC & _FCMEN_ON & _PWRTE_ON
 
     include defines.inc
-    include ../../libs/memory_operation_16f.asm
+    include ../../libs/memory_operation_16f.inc
     include ../../libs/interrupts.inc
     include ../../libs/math_macros.inc
     include ../../libs/init16f.inc
+    include ../../libs/macro_time.inc
 
     
     org   000h
@@ -72,8 +73,10 @@ init
 
     BANKSEL OPTION_REG
 
-	movlw	b'11000111'
+	movlw	b'11000000'
 	movwf	OPTION_REG
+
+    configure_tmr0   .7, .1
 
 
     configure_ports_16f  PORTA, b'11111100'

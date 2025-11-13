@@ -64,7 +64,7 @@ procek	equ	1
 ;definicje s w odzielnym pliku
 
 	include "./definicje.h"
-	include ../../libs/memory_operation_16f.asm
+	include ../../libs/memory_operation_16f.inc
 	include ../../libs/interrupts.inc
 
 	org	000h

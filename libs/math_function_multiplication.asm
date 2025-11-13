@@ -8,7 +8,7 @@
 
 func_multiply8bitx8bit
     BANKSEL  temp_l
-    macro_mul_16f temp_var, A_low, B_low, temp_lh, temp_l
+    macro_mul_16f var2, A_low, B_low, temp_lh, temp_l
     return
 
 

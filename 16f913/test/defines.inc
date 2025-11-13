@@ -50,7 +50,7 @@
 	w_temp
 	status_temp
 	pclath_temp
-	temp_var
+	fsr_temp
 	result_001
 	result_01
 	result_ll

@@ -18,12 +18,6 @@ configure_ports_16f  macro  port_reg, tris_state
         endm
 
 
-tmr0_count_to_1sec   macro  freq 
-        VARIABLE   tmr0_time   (4/freq)
-        endm
-
-
-
 config_lcd_off  macro 
    
        ;disable LCD module 
@@ -89,14 +83,18 @@ config_porta_digit_16f  macro
 
         endm
 
-config_watchdog   macro rate , state
+
+;wdg configuration macro
+;if wdg rate is given 15 -
+;means 2**15 is set as wdg prescaler rate
+config_watchdog   macro prescaler_rate , is_on
 ;keep timeout value in ms in 
         local wdt_time = 32
         BANKSEL WDTCON 
-        LOCAL x = state 
-        LOCAL r = rate
+        LOCAL x = is_on 
+        LOCAL r = prescaler_rate - 5
 
-        movlw x | (rate << 1)
+        movlw x | (r << 1)
         movwf WDTCON
 
         WHILE r > 0
