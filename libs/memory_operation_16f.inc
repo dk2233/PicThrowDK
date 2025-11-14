@@ -28,7 +28,26 @@ compare2bytes  macro  a, b, a1, b1, err, bit
     bsf     err,bit
 	endm
 
-macro_division_16f_loop_0
+
+compare3bytes  macro  a, b, c, a1, b1, c1, err, bit
+	BANKSEL err
+    movlw   a 
+    xorwf   a1,W
+    SKPZ	
+    bsf     err,bit
+	   
+    movlw   b
+	xorwf   b1,W
+    SKPZ
+    bsf     err,bit
+	   
+    movlw   c
+	xorwf   c1,W
+    SKPZ
+    bsf     err,bit
+	endm
+
+
 compare4bytes  macro a, b, c, d, a1, b1, c1, d1, err, bit
 	compare2bytes a,b, a1, b1, err, bit
 
@@ -68,6 +87,17 @@ movel_2bytes macro literal , var
     movwf   var+1
 	endm
 
+;move literal 24bits into ram variable (var , var + 1, var+2)
+movel_3bytes macro literal , var
+
+    movlw   literal & 0xff
+	movwf   var  
+    movlw   (literal >> 8) & 0xff
+    movwf   var+1
+    movlw   (literal >> 16) & 0xff
+    movwf   var+2
+
+	endm
 ;in case of Z set
 ;skip next line
 check_if_0_Z_skip_next   macro  reg 
@@ -75,7 +105,7 @@ check_if_0_Z_skip_next   macro  reg
 	SKPZ
 	endm 
 
-check_if_0_NZ_skip_next macro reg 
+check_if_0_NZ_skip_next_line macro reg 
 	movf    reg,W
 	SKPNZ 
 	endm
@@ -91,3 +121,32 @@ check_number_skip_if_not_even macro  reg
 	andwf    reg,W
 	btfss    STATUS,Z
 	endm 
+
+check16bit_if_0_Z_skip_next_line macro reg
+	local 	check16bit_if_0_Z_skip_next_line1
+	movf reg,W
+	btfss STATUS,Z ; if not zero just return - next line will be normally processed
+	goto  check16bit_if_0_Z_skip_next_line1
+
+	movf reg+1,w 
+	btfss STATUS,Z
+check16bit_if_0_Z_skip_next_line_exit 
+	endm
+
+
+
+move_2bytes_into_2bytes macro sourceL, destinationL
+	movf sourceL,W
+	movwf destinationL 
+	movf sourceL+1, W 
+	movwf  destinationL+1
+	endm
+
+move_3bytes_into_3bytes macro sourceL, destinationL
+	movf sourceL,W
+	movwf destinationL 
+	movf sourceL+1, W 
+	movwf  destinationL+1 
+	movf sourceL+2, W 
+	movwf  destinationL+2 
+	endm

@@ -455,6 +455,24 @@ main_wdg_detected
     compare1byte     0x30 , number_l , errors_div, 6 ; reminder
 
     nop
+
+    movel_3bytes   0x00f120, result_ll
+    movel_2bytes  0x0078, operandl
+    PAGESEL func_div_24bit_16bit
+    call func_div_24bit_16bit
+    compare3bytes    0, 0x02, 0x02, result_hl, result_lh, result_ll, errors_div, 6
+    compare2bytes     0, 0x30 , fraction_h , fraction_l, errors_div, 6 ; reminder
+
+    nop 
+
+    movel_3bytes   .36789, result_ll
+    movel_2bytes  .10000, operandl
+    PAGESEL func_div_24bit_16bit
+    call func_div_24bit_16bit
+    compare3bytes    0, 0x00, 0x03, result_hl, result_lh, result_ll, errors_div, 7
+    compare2bytes     0x1a, 0x85 , fraction_h , fraction_l, errors_div, 7 ; reminder
+
+    nop
     compare2bytes 0, 0 , errors16bit, errors_sum_loop, status_bits, 0 
     compare2bytes  0, 0, errors_mul_8bit, errors_div,  status_bits, 0 
 
