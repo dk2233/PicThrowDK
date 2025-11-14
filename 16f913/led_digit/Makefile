@@ -3,4 +3,4 @@ SRC=led_example.asm
 CC=gpasm
 
 all: 
-	$(CC) $(SRC)
+	$(CC) -X -k -e ON $(SRC)

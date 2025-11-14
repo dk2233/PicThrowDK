@@ -40,8 +40,8 @@
          segment_digit100
          segment_digit1000
          
-         leds
-         value_for_leds
+         leds_common
+         value_for_one_digit_segment
          segment_digit1_temp
          segment_digit10_temp
          segment_digit100_temp
@@ -59,11 +59,11 @@
          temp_B;czasowo dla portb
          temp_C;czasowo dla portc
          temp_1
-         led_state ; leds state - which digit,  
-         markers2
+         led_state ; leds_common state - which digit,  
+         program_states
          sygnaly
          stan_RB7
-         error
+         
          litera1
          litera2
          litera3
@@ -78,14 +78,14 @@
          wynik_pomiaru_h
          wynik_pomiaru_l
          wynik_pomiaru_01
-         temperaturaH
-         temperaturaL
-         temperatura01
-         znaczniki_regulacji
          segment_digit_temp1
          segment_digit_temp10
          segment_digit_temp100
          segment_digit_temp1000
+         
+         tmr2_count_to_1sec
+         timer_l
+         timer_h
          
          endc
          
@@ -102,6 +102,7 @@
 	result_H
 	operandl
 	operandh
+
 	fraction_l
 	fraction_h
 	number_l
@@ -113,7 +114,6 @@
         cblock 120h
 
 	var2
-	timer_l
 	temp_l
 	temp_lh
 	temp_hl
@@ -133,27 +133,15 @@
 button_port     equ     PORTC
 button          equ     3
 
-segment_digit1_port       equ      PORTC
-segment_digit1b           equ      6
 
-segment_digit10_port      equ      PORTC
-segment_digit10b          equ      7
+led_green_port   equ  PORTA 
+led_green_pin	 equ 0
 
-segment_digit100_port     equ      PORTB
-segment_digit100b         equ      4
-
-segment_digit1000_port    equ      PORTB
-segment_digit1000b        equ      5
-
-
-port_led_L          equ      PORTC ; 4 bits lower
-port_led_H          equ      PORTB
 
 
 nadpradowy_port   equ      PORTB
 nadpradowy        equ      0
-        
-leds_start        equ      b'00001000'
+
 
 
 ;domyslnie jest to portA 
@@ -199,8 +187,9 @@ disable_show     equ 6
 
 
 
-;markers2
+;program_states
 
+increment_1sec     equ 0
 przerwanie_t1     equ      2
 przerwanie_t0     equ      3
 sudo_menu       equ      7 
@@ -209,20 +198,47 @@ sudo_menu       equ      7
 
 
 
+
+
+
+
+
+;status_bits bits 
+run_system equ 7
+
+
+how_many_tmr2_count_1sec    equ .31
+
+
+
+
+led_green_port   equ  PORTA 
+led_green_pin	 equ 0
+led_red_port   equ  PORTA 
+led_red_pin	 equ 1
+
+;configuration of LED procedure
+#define LED_SEGMENT  .4
+
 ;ledy
 led1              equ      0
 led10             equ      1
 led100            equ      2
 led1000           equ      3
 
+leds_start        equ      b'00001000'
 
+port_led_L          equ      PORTC ; 4 bits lower
+port_led_H          equ      PORTB
 
+segment_digit1_port       equ      PORTC
+segment_digit1b           equ      6
 
+segment_digit10_port      equ      PORTC
+segment_digit10b          equ      7
 
-run_system_marker   equ 0x56
-SFR_to_detect_WDG	equ LCDDATA0
+segment_digit100_port     equ      PORTB
+segment_digit100b         equ     4
 
-;status_bits bits 
-run_system equ 7
-wdg_detected  equ 6
-wdg_detected2 equ 5
+segment_digit1000_port    equ      PORTB
+segment_digit1000b        equ      5

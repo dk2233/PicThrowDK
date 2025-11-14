@@ -15,6 +15,8 @@
     include ../../libs/math_macros.inc
     include ../../libs/init16f.inc
     include ../../libs/macro_time.inc
+    include ../../libs/macro_hex_to_dec_1000.inc
+    include ../../libs/macro_resets.inc
 
     
     org   000h
@@ -63,11 +65,25 @@ ISR_timer2
     BANKSEL PIR1
     bcf   PIR1, TMR2IF
 
+    BANKSEL  tmr2_count_to_1sec
+    decfsz tmr2_count_to_1sec,f
+    goto   ISR_timer2_next
+
+    ;increment timer value 
+    bsf   program_states,increment_1sec
+
+    movlw   how_many_tmr2_count_1sec 
+    movwf   tmr2_count_to_1sec
+
+
+
+ISR_timer2_next
+
     goto  ISR_exit
 
 translate_value_to_port_pins 
     ;portc - 4 lower bits 
-    ;portb - 4 lower bits filleds with higher bits from value_for_leds
+    ;portb - 4 lower bits filleds with higher bits from value_for_one_digit_segment
 
     BANKSEL port_led_L
 
@@ -77,12 +93,12 @@ translate_value_to_port_pins
     movlw  0xf0 
     andwf  port_led_H,f ;clear lower bits
 
-    MOVF    value_for_leds,w  
+    MOVF    value_for_one_digit_segment,w  
     andlw   0x0f 
 
     addwf   port_led_L,f 
 
-    swapf   value_for_leds,w 
+    swapf   value_for_one_digit_segment,w 
     andlw   0x0f
 
     addwf   port_led_H,f  
@@ -90,14 +106,43 @@ translate_value_to_port_pins
 
     return
 
+change_timer_seconds
+    BANKSEL program_states
+    bcf  program_states, increment_1sec
+
+    BANKSEL led_green_port
+    bcf    led_green_port, led_green_pin
+
+    BANKSEL timer_l
+    incf   timer_l,f 
+    btfsc  STATUS,Z 
+    incf   timer_h,f
+
+    
+    movf  timer_l,w 
+    movwf number_l
+    movf  timer_h,W
+    movwf number_h
+
+    call hex2dec_1000
+
+    return
+
 main 
 
      clrwdt ; this comment to be able to test WDG detection
 
-    BANKSEL refresh_led
+    PAGESEL refresh_led
+    BANKSEL led_state
     btfsc   led_state, process_led
     call refresh_led
 
+    PAGESEL change_timer_seconds
+    btfsc  program_states, increment_1sec
+    call  change_timer_seconds
+
+
+    PAGESEL main
     goto main
 
     org 800h
@@ -118,6 +163,9 @@ init
     configure_ports_16f  PORTB, b'11000000'
     configure_ports_16f  PORTC, b'00110000'
 
+    ;signal reset 
+    BANKSEL led_green_port
+    bsf   led_green_port, led_green_pin
     BANKSEL  OSCCON
 ; OSCCON set for HS 8MHz	
 	movlw	b'01110111'
@@ -133,39 +181,33 @@ init
 
     clear_memory  segment_digit1,0x5f ; here status_bits is cleared
 
-    BANKSEL var2
-    movlw  0
-    movwf  var2
-    ;detect that wdg timeout occurs if bit is not set = same
-    compare1byte_set_when_same  run_system_marker,  SFR_to_detect_WDG, status_bits, wdg_detected
-
-    BANKSEL status_bits
-    btfss  status_bits, wdg_detected
-    goto init2 
-
-
-    compare1byte_set_when_same  run_system_marker, wdg_timeout_marker, status_bits, wdg_detected2
-
 
 init2
     clear_memory 0xa0,10
     clear_memory var2, 30
     
 
+    BANKSEL tmr2_count_to_1sec
+    movlw  how_many_tmr2_count_1sec
+    movwf  tmr2_count_to_1sec
+
     BANKSEL status_bits
     ;run marked
     bsf status_bits, run_system
 
-    BANKSEL SFR_to_detect_WDG
-    movlw   run_system_marker
-    movwf   SFR_to_detect_WDG
-
-    BANKSEL wdg_timeout_marker
-    movwf   wdg_timeout_marker
-
-    BANKSEL leds 
+    BANKSEL leds_common 
     movlw   leds_start
-    movwf  leds
+    movwf  leds_common
+
+    BANKSEL PCON
+    detect_watchdog_happens
+    xorlw  1 
+    btfss STATUS,Z
+    goto  init3
+
+    BANKSEL led_red_port
+    bsf led_red_port,led_red_pin
+init3
     PAGESEL main
     goto main 
     
