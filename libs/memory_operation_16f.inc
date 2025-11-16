@@ -31,21 +31,22 @@ compare2bytes  macro  a, a1_l, err, bit
 	   
 	endm
 
-
-compare3bytes  macro  a, b, c, a1, b1, c1, err, bit
+; a is a 3 bytes
+;
+compare3bytes  macro  a, a1,  err, bit
 	BANKSEL err
-    movlw   a 
-    xorwf   a1,W
+    movlw   ( a >> .16 ) & 0xff
+    xorwf   a1+2,W
     SKPZ	
     bsf     err,bit
 	   
-    movlw   b
-	xorwf   b1,W
+    movlw   (a >> 8) & 0xff
+	xorwf   a1+1,W
     SKPZ
     bsf     err,bit
 	   
-    movlw   c
-	xorwf   c1,W
+    movlw   a & 0xff
+	xorwf   a1,W
     SKPZ
     bsf     err,bit
 	endm

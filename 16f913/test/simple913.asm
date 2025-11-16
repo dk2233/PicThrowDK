@@ -41,8 +41,6 @@ ISR_exit
 
     retfie
 
-    PAGESEL init
-    goto init
     include ../../libs/math_function_multiplication.asm
     include ../../libs/multiplication_16f_loop.asm
     include ../../libs/math_function_div.asm
@@ -463,7 +461,7 @@ main_wdg_detected
     movel_2bytes  0x0078, operandl
     PAGESEL func_div_24bit_16bit
     call func_div_24bit_16bit
-    compare3bytes    0, 0x02, 0x02, result_hl, result_lh, result_ll, errors_div, 6
+    compare3bytes    0x0202, result_ll, errors_div, 6
     compare2bytes     0x030 ,  fraction_l, errors_div, 6 ; reminder
 
     nop 
@@ -472,7 +470,7 @@ main_wdg_detected
     movel_2bytes  .10000, operandl
     PAGESEL func_div_24bit_16bit
     call func_div_24bit_16bit
-    compare3bytes    0, 0x00, 0x03, result_hl, result_lh, result_ll, errors_div, 7
+    compare3bytes    0x000003, result_ll, errors_div, 7
     compare2bytes     0x1a85 ,  fraction_l, errors_div, 7 ; reminder
 
     nop

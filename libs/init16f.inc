@@ -107,3 +107,31 @@ test_var equ wdt_time
         
 
         endm
+
+
+config_osccon   macro  freq_bits, external_clock_startup, clock_select
+        LOCAL bits = freq_bits << IRCF0 
+bits = bits | (external_clock_startup << OSTS)
+
+bits = bits | (b'11' << LTS )
+bits = bits | (clock_select << SCS)
+        BANKSEL OSCCON
+        movlw bits 
+        movwf OSCCON
+
+        endm
+
+
+config_tmr1_as_timer   macro   prescaler_bit, interrupt_on 
+        LOCAL bits = 1 << TMR1ON
+bits = bits | (prescaler_bit << T1CKPS0 )
+        movlw bits 
+        BANKSEL T1CON
+        movwf T1CON
+
+        if (interrupt_on == 1)
+        BANKSEL PIE1
+        bsf PIE1, TMR1IE 
+        endif 
+        endm
+  

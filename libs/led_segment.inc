@@ -75,6 +75,31 @@ tab_cyfr
 
 
 
+m_led_common_handle  macro  number_of_digits 
+
+    LOCAL n_digit = number_of_digits , x = number_of_digits, divider = 1
+    
+    while ( x > 1 )
+divider = divider * .10
+x = x - 1
+    endw
+        while (n_digit > 0)
+         btfsc    leds_common,led#v(divider)
+         bsf      segment_digit#v(divider)_port,segment_digit#v(divider)b
+n_digit = n_digit - 1
+divider = divider / .10;
+        endw 
+
+        ; btfsc    leds_common,led100
+        ; bsf      segment_digit100_port,segment_digit100b
+         
+        ; btfsc    leds_common,led10
+        ; bsf      segment_digit10_port,segment_digit10b
+         
+        ; btfsc    leds_common,led1
+        ; bsf      segment_digit1_port,segment_digit1b
+         endm
+
 ;call this procedure
 ;with following variables
 ;in segment_digit1
@@ -84,7 +109,6 @@ tab_cyfr
 ; put values to be visible
 ;for example to see 1234
 ;place   1 in segment_digit1000, 2 in segment_digit100, 3 in segment_digit10, 4 in segment_digit1
-;frequency of refresh should be not less than 50 Hz
 ;for example - every 10 ms - 100Hz however for 4 digits will be 25 Hz
 refresh_led
          BANKSEL segment_digit1
@@ -176,18 +200,8 @@ send_to_leds
          
 zalacz_katody     
          BANKSEL leds_common
-         btfsc    leds_common,led1000
-         bsf      segment_digit1000_port,segment_digit1000b
-         
-         btfsc    leds_common,led100
-         bsf      segment_digit100_port,segment_digit100b
-         
-         btfsc    leds_common,led10
-         bsf      segment_digit10_port,segment_digit10b
-         
-         btfsc    leds_common,led1
-         bsf      segment_digit1_port,segment_digit1b
 
+         m_led_common_handle LED_SEGMENT
         clrf             PCLATH         
          return 
          
