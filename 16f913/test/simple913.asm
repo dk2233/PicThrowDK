@@ -134,13 +134,13 @@ main
 ;here are some "regression tests" 
 ;for multiplication different procedures
     ;clrwdt
-    BANKSEL status_bits
-    btfss  status_bits, wdg_detected
-    goto main2
-    btfss  status_bits, wdg_detected2
-    goto main2
+    ;BANKSEL status_bits
+    ;btfss  status_bits, wdg_detected
+    ;goto main2
+    ;btfss  status_bits, wdg_detected2
+    ;goto main2
 
-    goto main_wdg_detected
+    ;goto main_wdg_detected
 
 main2
 
@@ -181,8 +181,9 @@ main2
     movwf   number_l
     macro_mul_16f  number_h, number_l, operandl,result_lh, result_ll  
 
+    nop
     
-    compare2bytes  LOW(var4*var5), HIGH(var4*var5), result_ll, result_lh, errors_mul_8bit, 0
+    compare2bytes  var4*var5, result_ll, errors_mul_8bit, 0
 
 
     movlw   3
@@ -191,7 +192,7 @@ main2
     movwf   number_l
     macro_mul_16f  number_h, number_l ,operandl,result_lh, result_ll  
     
-    compare2bytes  LOW(3*6), HIGH(3*6), result_ll, result_lh, errors_mul_8bit, 1
+    compare2bytes  3*6, result_ll, errors_mul_8bit, 1
 
     movlw   var4
     movwf   operandl
@@ -199,7 +200,7 @@ main2
     movwf   number_l
     macro_mul_16f  number_h, number_l ,operandl,result_lh, result_ll  
     nop
-    compare2bytes  LOW(var4*var4), HIGH(var4 * var4), result_ll, result_lh, errors_mul_8bit, 2
+    compare2bytes  var4*var4, result_ll , errors_mul_8bit, 2
     
     movlw   var6
     movwf   operandl
@@ -207,7 +208,7 @@ main2
     movwf   number_l
     macro_mul_16f  number_h, number_l ,operandl,result_lh, result_ll  
     nop
-    compare2bytes  LOW(var6*var6), HIGH(var6 * var6), result_ll, result_lh, errors_mul_8bit, 3
+    compare2bytes  var6 * var6, result_ll,  errors_mul_8bit, 3
 
     movlw   var7
     movwf   operandl
@@ -215,7 +216,7 @@ main2
     movwf   number_l
     macro_mul_16f  number_h, number_l ,operandl,result_lh, result_ll  
     nop
-    compare2bytes  LOW(var7*var7), HIGH(var7 * var7), result_ll, result_lh, errors_mul_8bit, 4
+    compare2bytes  var7 * var7, result_ll,  errors_mul_8bit, 4
 
     VARIABLE var8 = 0x99
     VARIABLE var9 = 0x34
@@ -226,7 +227,7 @@ main2
     movwf   number_l
     macro_mul_16f  number_h, number_l ,operandl,result_lh, result_ll  
     nop
-    compare2bytes  LOW(var8*var9), HIGH(var8 * var9), result_ll, result_lh, errors_mul_8bit, 5
+    compare2bytes  var8 * var9, result_ll,  errors_mul_8bit, 5
     PAGESEL main
 
     movlw   var8
@@ -239,8 +240,8 @@ main2
     movwf   number_h 
     PAGESEL func_multiply16bitx16bit
     call    func_multiply16bitx16bit
-
-    compare4bytes 0x67, 0x66, 0x98, 0x99,   result_ll, result_lh, result_hl, result_H , errors16bit, 0
+    nop
+    compare4bytes 0x99986667,     result_ll , errors16bit, 0
 
     nop
 
@@ -256,7 +257,7 @@ main2
     clrf    fraction_h
     PAGESEL mul16f 
     call mul16f
-    compare4bytes 0x67, 0x66, 0x98, 0x99,   result_ll, result_lh, result_hl, result_H , errors_sum_loop, 0
+    compare4bytes 0x99986667,    result_ll , errors16bit, 1
 
 
 
@@ -273,12 +274,13 @@ main2
     PAGESEL func_multiply16bitx16bit
     call    func_multiply16bitx16bit
 
-    compare4bytes 0x01, 0x0, 0xfe, 0xff,   result_ll, result_lh, result_hl, result_H , errors16bit, 1
+    compare4bytes 0xfffe0001,    result_ll , errors16bit, 1
     nop
 
     PAGESEL mul16f 
     call mul16f
-    compare4bytes 0x01, 0x0, 0xfe, 0xff,   result_ll, result_lh, result_hl, result_H , errors_sum_loop, 1
+    nop
+    compare4bytes 0xfffe0001,    result_ll , errors_sum_loop, 1
     nop
 
     movlw   0x0
@@ -294,13 +296,13 @@ main2
     PAGESEL func_multiply16bitx16bit
     call    func_multiply16bitx16bit
 
-    compare4bytes 0xf1, 0xaf, 0x5e, 0x0,   result_ll, result_lh, result_hl, result_H , errors16bit, 2
+    compare4bytes 0x005eaff1 ,   result_ll , errors16bit, 2
     nop
 
     PAGESEL mul16f 
     call mul16f
 
-    compare4bytes 0xf1, 0xaf, 0x5e, 0x0,   result_ll, result_lh, result_hl, result_H , errors_sum_loop, 2
+    compare4bytes 0x005eaff1,    result_ll, errors_sum_loop, 2
 
     nop
     movlw   0x0
@@ -316,13 +318,13 @@ main2
     PAGESEL func_multiply16bitx16bit
     call    func_multiply16bitx16bit
 
-    compare4bytes 0, 0x0, 0x0, 0x0,   result_ll, result_lh, result_hl, result_H , errors16bit, 3
+    compare4bytes 0,   result_ll, errors16bit, 3
 
     PAGESEL mul16f 
     call mul16f
 
 
-    compare4bytes 0, 0x0, 0x0, 0x0,   result_ll, result_lh, result_hl, result_H , errors_sum_loop, 3
+    compare4bytes 0,    result_ll, errors_sum_loop, 3
     
     nop
 
@@ -339,11 +341,11 @@ main2
     PAGESEL func_multiply16bitx16bit
     call    func_multiply16bitx16bit
 
-    compare4bytes 0xf, 0x5f, 0x0, 0x0,   result_ll, result_lh, result_hl, result_H , errors16bit, 4
+    compare4bytes 0x5f0f,    result_ll, errors16bit, 4
     PAGESEL mul16f 
     call mul16f
     nop
-    compare4bytes 0xf, 0x5f, 0x0, 0x0,   result_ll, result_lh, result_hl, result_H , errors_sum_loop, 4
+    compare4bytes 0x5f0f,    result_ll, errors_sum_loop, 4
     
     movlw   0x0
     movwf   operandh 
@@ -360,8 +362,8 @@ main2
     PAGESEL mul16f
     call    mul16f
 
-    compare4bytes 0xf4, 0x46, 0x01, 0x0,   result_ll, result_lh, result_hl, result_H , errors_sum_loop, 5
-    compare2bytes 0x5b, 0x68, result_01, result_001, errors_sum_loop, 1
+    compare4bytes 0x0146f4,    result_ll, errors_sum_loop, 5
+    compare2bytes 0x5b68, result_001, errors_sum_loop, 1
     nop
     
 main_wdg_detected
@@ -373,8 +375,9 @@ main_wdg_detected
     PAGESEL mul16f
     call    mul16f
 
-    compare4bytes 0x1a, 0xe1, 0xaf, 0x06,   result_ll, result_lh, result_hl, result_H , errors_sum_loop, 6
-    compare2bytes 0xa, 0xce, result_01, result_001, errors_sum_loop, 6
+    nop
+    compare4bytes 0x06afe11a,    result_ll, errors_sum_loop, 6
+    compare2bytes 0x0ace, result_001, errors_sum_loop, 6
     nop
 
 
@@ -384,7 +387,7 @@ main_wdg_detected
     macro_division_16f  number_h, number_l, operandl, result_lh, result_ll  
 
     nop
-    compare2bytes    0x5, 0x60, result_lh, result_ll, errors_div, 0 
+    compare2bytes    0x560, result_ll, errors_div, 0 
     compare1byte     0x0 , number_l , errors_div, 0 ; reminder
 
     nop
@@ -394,7 +397,7 @@ main_wdg_detected
     macro_division_16f  number_h, number_l, operandl, result_lh, result_ll  
 
     nop
-    compare2bytes    0x1, 0x01, result_lh, result_ll, errors_div, 1 
+    compare2bytes    0x101,  result_ll, errors_div, 1 
     compare1byte     0x0 , number_l , errors_div, 1 ; reminder
 
     nop 
@@ -406,7 +409,7 @@ main_wdg_detected
     macro_division_16f  number_h, number_l, operandl, result_lh, result_ll  
 
     nop
-    compare2bytes    0xff, 0xff, result_lh, result_ll, errors_div, 2 
+    compare2bytes    0xffff,  result_ll, errors_div, 2 
     compare1byte     0x0 , number_l , errors_div, 2 ; reminder
 
     nop
@@ -417,7 +420,7 @@ main_wdg_detected
     macro_division_16f  number_h, number_l, operandl, result_lh, result_ll 
 
     nop
-    compare2bytes    0x00, 0x02, result_lh, result_ll, errors_div, 3
+    compare2bytes    0x0002,  result_ll, errors_div, 3
     compare1byte     0x1 , number_l , errors_div, 3 ; reminder
 
     nop
@@ -428,7 +431,7 @@ main_wdg_detected
     macro_division_16f  number_h, number_l, operandl, result_lh, result_ll 
 
     nop
-    compare2bytes    0x00, 0x00, result_lh, result_ll, errors_div, 4
+    compare2bytes    0x0000,  result_ll, errors_div, 4
     compare1byte     0x05 , number_l , errors_div, 4 ; reminder
     
     nop
@@ -439,7 +442,7 @@ main_wdg_detected
     macro_division_16f  number_h, number_l, operandl, result_lh, result_ll 
 
     nop
-    compare2bytes    0x01, 0x4e, result_lh, result_ll, errors_div, 5
+    compare2bytes    0x014e,  result_ll, errors_div, 5
     compare1byte     0x0b , number_l , errors_div, 5 ; reminder
 
     nop
@@ -451,7 +454,7 @@ main_wdg_detected
     call func_div_16bit_8bit
 
     nop
-    compare2bytes    0x02, 0x02, result_lh, result_ll, errors_div, 6
+    compare2bytes    0x0202,  result_ll, errors_div, 6
     compare1byte     0x30 , number_l , errors_div, 6 ; reminder
 
     nop
@@ -461,7 +464,7 @@ main_wdg_detected
     PAGESEL func_div_24bit_16bit
     call func_div_24bit_16bit
     compare3bytes    0, 0x02, 0x02, result_hl, result_lh, result_ll, errors_div, 6
-    compare2bytes     0, 0x30 , fraction_h , fraction_l, errors_div, 6 ; reminder
+    compare2bytes     0x030 ,  fraction_l, errors_div, 6 ; reminder
 
     nop 
 
@@ -470,11 +473,11 @@ main_wdg_detected
     PAGESEL func_div_24bit_16bit
     call func_div_24bit_16bit
     compare3bytes    0, 0x00, 0x03, result_hl, result_lh, result_ll, errors_div, 7
-    compare2bytes     0x1a, 0x85 , fraction_h , fraction_l, errors_div, 7 ; reminder
+    compare2bytes     0x1a85 ,  fraction_l, errors_div, 7 ; reminder
 
     nop
-    compare2bytes 0, 0 , errors16bit, errors_sum_loop, status_bits, 0 
-    compare2bytes  0, 0, errors_mul_8bit, errors_div,  status_bits, 0 
+    ;check for 4 errors if any is set
+    compare4bytes 0,  errors_mul_8bit, status_bits, 0 
 
     PAGESEL led_off
     btfsc   led_green_port,led_green_pin

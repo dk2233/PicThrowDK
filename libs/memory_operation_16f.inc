@@ -14,18 +14,21 @@ nextm
 	endm
 
 
-
-compare2bytes  macro  a, b, a1, b1, err, bit
+;set error if not same
+compare2bytes  macro  a, a1_l, err, bit
 	BANKSEL err
-    movlw   a 
-    xorwf   a1,W
+	; high is in a1_l second byte
+    movlw   (a >> 8) & 0xff
+	;movlw UPPER a
+	xorwf   a1_l+1,W
+    SKPZ
+    bsf     err,bit
+
+    movlw   a & 0xff  
+    xorwf   a1_l,W
     SKPZ	
     bsf     err,bit
 	   
-    movlw   b
-	xorwf   b1,W
-    SKPZ
-    bsf     err,bit
 	endm
 
 
@@ -48,10 +51,11 @@ compare3bytes  macro  a, b, c, a1, b1, c1, err, bit
 	endm
 
 
-compare4bytes  macro a, b, c, d, a1, b1, c1, d1, err, bit
-	compare2bytes a,b, a1, b1, err, bit
+compare4bytes  macro a, a1_ll, err, bit
+	compare2bytes ((a >> .16) & 0xffff) , a1_ll+2, err, bit 
 
-	compare2bytes c,d, c1, d1, err, bit 
+	compare2bytes (a & 0xffff), a1_ll, err, bit
+
 
 	endm
 

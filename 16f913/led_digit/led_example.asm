@@ -124,6 +124,17 @@ change_timer_seconds
     movf  timer_h,W
     movwf number_h
 
+    bcf  operandl,0
+    compare2bytes .10000, timer_l , operandl, 0 
+
+    btfsc operandl,0
+    goto  change_timer_seconds_1 
+
+    movlw 0 
+    movwf timer_h
+    movwf timer_l
+
+change_timer_seconds_1
     call hex2dec_1000
 
     return
