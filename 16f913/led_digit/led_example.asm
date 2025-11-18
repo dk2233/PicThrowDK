@@ -46,12 +46,8 @@ ISR_exit
 
     retfie
 
-    PAGESEL init
-    goto init
-    include ../../libs/math_function_multiplication.asm
-    include ../../libs/multiplication_16f_loop.asm
     include ../../libs/math_function_div.asm
-    include ../../libs/led_segment.inc
+    include ../../libs/display/led_segment.inc
 
 ISR_timer0
     bcf INTCON,T0IF
@@ -113,19 +109,9 @@ change_timer_seconds
     BANKSEL led_green_port
     bcf    led_green_port, led_green_pin
 
-    BANKSEL timer_l
-    incf   timer_l,f 
-    btfsc  STATUS,Z 
-    incf   timer_h,f
-
-    
-    movf  timer_l,w 
-    movwf number_l
-    movf  timer_h,W
-    movwf number_h
-
     bcf  operandl,0
-    compare2bytes .10000, timer_l , operandl, 0 
+    
+    compare2bytes max_value_to_be_displayed, timer_l , operandl, 0 
 
     btfsc operandl,0
     goto  change_timer_seconds_1 
@@ -133,24 +119,40 @@ change_timer_seconds
     movlw 0 
     movwf timer_h
     movwf timer_l
+    goto change_timer_seconds_2
 
 change_timer_seconds_1
-    call hex2dec_1000
+
+    BANKSEL timer_l
+    incf   timer_l,f 
+    btfsc  STATUS,Z 
+    incf   timer_h,f
+
+change_timer_seconds_2
+    
+    movf  timer_l,w 
+    movwf number_l
+    movf  timer_h,W
+    movwf number_h
+
+
+    call split_number_to_digits
 
     return
 
 main 
 
      clrwdt ; this comment to be able to test WDG detection
+    PAGESEL change_timer_seconds
+    BANKSEL program_states
+    btfsc  program_states, increment_1sec
+    call  change_timer_seconds
 
     PAGESEL refresh_led
     BANKSEL led_state
     btfsc   led_state, process_led
     call refresh_led
 
-    PAGESEL change_timer_seconds
-    btfsc  program_states, increment_1sec
-    call  change_timer_seconds
 
 
     PAGESEL main
@@ -167,7 +169,7 @@ init
 	movlw	b'11000000'
 	movwf	OPTION_REG
 
-    configure_tmr0   3, 1 ; prescaler 16 -> 4/8Mhz * 256 * 16
+    configure_tmr0   b'100', 1 ; prescaler 16 -> 4/8Mhz * 256 * 16
 
 
     configure_ports_16f  PORTA, b'11111100'
@@ -179,8 +181,11 @@ init
     bsf   led_green_port, led_green_pin
     BANKSEL  OSCCON
 ; OSCCON set for HS 8MHz	
-	movlw	b'01110111'
-    movwf  OSCCON
+	;movlw	b'01110111'
+    ;movwf  OSCCON
+
+    config_osccon b'111', 1, 1
+    
 
 	movlw	b'11100000'
 	movwf	INTCON
@@ -206,9 +211,6 @@ init2
     ;run marked
     bsf status_bits, run_system
 
-    BANKSEL leds_common 
-    movlw   leds_start
-    movwf  leds_common
 
     BANKSEL PCON
     detect_watchdog_happens
@@ -216,9 +218,12 @@ init2
     btfss STATUS,Z
     goto  init3
 
+
     BANKSEL led_red_port
     bsf led_red_port,led_red_pin
 init3
+    PAGESEL led_digit_init
+    call led_digit_init
     PAGESEL main
     goto main 
     

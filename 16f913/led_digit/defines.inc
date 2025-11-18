@@ -41,13 +41,14 @@
          segment_digit1000
          
          leds_common
+         led_state ; leds_common state - which digit,  
+         
          value_for_one_digit_segment
          segment_digit1_temp
          segment_digit10_temp
          segment_digit100_temp
          segment_digit1000_temp
-         ktora_segment_digit
-         ktora_segment_digit_set
+         
          port_change
          zegar_miganie
          zegar4
@@ -59,10 +60,8 @@
          temp_B;czasowo dla portb
          temp_C;czasowo dla portc
          temp_1
-         led_state ; leds_common state - which digit,  
          program_states
          sygnaly
-         stan_RB7
          
          litera1
          litera2
@@ -70,10 +69,6 @@
          litera4
          
          
-         znaczniki_startu
-         n
-         co_pokazuje_menu
-         pozycja_menu
          ktora_probka
          wynik_pomiaru_h
          wynik_pomiaru_l
@@ -139,41 +134,8 @@ led_green_pin	 equ 0
 
 
 
-nadpradowy_port   equ      PORTB
-nadpradowy        equ      0
 
 
-
-;domyslnie jest to portA 
-
-;dla pic16f876
-;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;
-;domyslnie        jest to porta6
-;dla pic16f876
-;        IF       procek==1
-
-
-;        ENDIF
-
-;dla pic16f916
-;        IF       procek==2
-;button_port      equ      PORTC
-;button           equ      3
-
-;        ENDIF
-
-
-
-
-;dla pic16f916
-
-
-;ktora_cyfra
-inc1              equ      0
-inc10             equ      1
-inc100            equ      2
-inc1000           equ      3
 
 
 ;led_state
@@ -218,15 +180,13 @@ led_red_port   equ  PORTA
 led_red_pin	 equ 1
 
 ;configuration of LED procedure
-#define LED_SEGMENT  .4
+#define LED_SEGMENT  .3
 
 ;ledy
 led1              equ      0
 led10             equ      1
 led100            equ      2
 led1000           equ      3
-
-leds_start        equ      b'00001000'
 
 port_led_L          equ      PORTC ; 4 bits lower
 port_led_H          equ      PORTB
@@ -242,3 +202,5 @@ segment_digit100b         equ     4
 
 segment_digit1000_port    equ      PORTB
 segment_digit1000b        equ      5
+
+max_value_to_be_displayed   equ  .999
