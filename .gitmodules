@@ -1,0 +1,3 @@
+[submodule "PicLibDK"]
+	path = PicLibDK
+	url = git@github.com:dk2233/PicLibDK.git

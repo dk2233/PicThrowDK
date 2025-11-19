@@ -66,7 +66,7 @@
 
 
 led_port   equ  PORTC 
-last_led_pin	 equ  b'00001000'
+last_led_pin	 equ  b'00010000'
 start_led_pin  equ 1
 
 ;status_bits bits 

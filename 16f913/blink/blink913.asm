@@ -10,9 +10,9 @@
 	__CONFIG _WDT_OFF & _MCLRE_ON & _DEBUG_ON & _IESO_OFF  & _FCMEN_OFF & _PWRTE_ON & _INTOSCIO
 
     include defines.inc
-    include ../../libs/interrupts.inc
-    include ../../libs/init16f.inc
-    include ../../libs/memory_operation_16f.inc
+    include ../../PicLibDK/interrupts.inc
+    include ../../PicLibDK/init16f.inc
+    include ../../PicLibDK/memory_operation_16f.inc
 
     org  000h 
     PAGESEL init 
@@ -139,7 +139,7 @@ init
     movlw b'11000000'
     movwf INTCON
 
-    config_tmr1_as_timer  b'10', 1
+    config_tmr1_as_timer  b'01', 1
 
     BANKSEL led_port
     movlw start_led_pin 

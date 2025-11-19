@@ -13,11 +13,11 @@
 	__CONFIG _WDT_OFF & _MCLRE_ON & _DEBUG_ON & _IESO_ON  & _HS_OSC & _FCMEN_ON & _PWRTE_ON
 
     include defines.inc
-    include ../../libs/memory_operation_16f.inc
-    include ../../libs/interrupts.inc
-    include ../../libs/math_macros.inc
-    include ../../libs/init16f.inc
-    include ../../libs/macro_time.inc
+    include ../../PicLibDK/memory_operation_16f.inc
+    include ../../PicLibDK/interrupts.inc
+    include ../../PicLibDK/math/math_macros.inc
+    include ../../PicLibDK/init16f.inc
+    include ../../PicLibDK/macro_time.inc
 
     
     org   000h
@@ -41,9 +41,9 @@ ISR_exit
 
     retfie
 
-    include ../../libs/math_function_multiplication.asm
-    include ../../libs/multiplication_16f_loop.asm
-    include ../../libs/math_function_div.asm
+    include ../../PicLibDK/math/math_function_multiplication.asm
+    include ../../PicLibDK/math/multiplication_16f_loop.asm
+    include ../../PicLibDK/math/math_function_div.asm
 
 ISR_timer0
     bcf INTCON,T0IF
