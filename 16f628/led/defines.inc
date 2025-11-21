@@ -41,7 +41,8 @@
          segment_digit1000
          
          leds_common
-         led_state ; leds_common state - which digit,  
+         led_state ; leds_common state - which digit, 
+         led_dot_display ; each bits 
          
          value_for_one_digit_segment
          
@@ -97,6 +98,12 @@
 
         
 
+;led_dot_display
+light_dot1      equ  0
+light_dot10      equ  1
+light_dot100    equ  2
+light_dot1000   equ  3 
+light_dot10000   equ  3 
 
 
 ;led_state

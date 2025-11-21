@@ -98,6 +98,19 @@ change_timer_seconds_2
 
     call split_number_to_digits
 
+    BANKSEL led_dot_display
+    btfsc led_dot_display, light_dot1 
+    goto  change_timer_seconds_dot_off 
+
+    bsf   led_dot_display, light_dot1 
+    bcf   led_dot_display, light_dot10
+    return
+    
+change_timer_seconds_dot_off
+    BANKSEL led_dot_display
+    bcf   led_dot_display, light_dot1 
+    bsf   led_dot_display, light_dot10
+
     return
 
 init 
@@ -112,7 +125,7 @@ init
     configure_tmr0  b'010', 1 ;8 prescaler
     configure_tmr2  2, b'1111', .244 ; 4/4e6 * 16 * 16 * 244 * 16
     configure_ports_16f  PORTB, b'00000000'
-    configure_ports_16f  PORTA,b'11110000'
+    configure_ports_16f  PORTA, b'11110000'
 
     BANKSEL PIE1 
     bsf  PIE1, TMR2IE
@@ -136,7 +149,6 @@ main
     btfsc program_states, increment_1sec 
     call change_timer_seconds 
 
-    PAGESEL refresh_led 
     btfsc led_state, process_led
     call refresh_led
 
