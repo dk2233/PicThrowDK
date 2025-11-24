@@ -3,7 +3,7 @@
 
 ;porty licznika
 
-;RA0 - 
+;RA0 -  
 ;RA1 - 
 ;RA2 - 
 ;RA3 - 
@@ -29,10 +29,10 @@
 ;RC6 - 100
 ;RC5 - 10
 ;RC4 - 1
-;RC3 - przycisk
-;RC2 - grzałka
-;RC1 - DATownik - tzn printer
-;RC0 - buzzer_port
+;RC3 - 
+;RC2 - 
+;RC1 - 
+;RC0 - 
 
          cblock 20h
          segment_digit1
@@ -42,14 +42,9 @@
          
          leds_common
          led_state ; leds_common state - which digit,  
+         led_dot_display
          
          value_for_one_digit_segment
-         segment_digit1_temp
-         segment_digit10_temp
-         segment_digit100_temp
-         segment_digit1000_temp
-         
-         port_change
          zegar_miganie
          zegar4
          zegar3_off
@@ -63,20 +58,8 @@
          program_states
          sygnaly
          
-         litera1
-         litera2
-         litera3
-         litera4
          
          
-         ktora_probka
-         wynik_pomiaru_h
-         wynik_pomiaru_l
-         wynik_pomiaru_01
-         segment_digit_temp1
-         segment_digit_temp10
-         segment_digit_temp100
-         segment_digit_temp1000
          
          tmr2_count_to_1sec
          timer_l
@@ -125,24 +108,12 @@
 
         
 
-button_port     equ     PORTC
-button          equ     3
-
-
-led_green_port   equ  PORTA 
-led_green_pin	 equ 0
-
-
 
 
 
 
 
 ;led_state
-key_down_1000    equ      0 ;1
-key_zero         equ      1 ;10
-key_up_10        equ      2 ;100
-key_reset    equ      3 ;1000
 previous_0            equ      4;jezeli jest wlaczony to poprzednia cyfra nie byla wyswietlana bo byla 0
 process_led      equ     5 
 disable_show     equ 6

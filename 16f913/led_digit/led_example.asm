@@ -1,4 +1,3 @@
-
 ;this program 
 ;sets interrupts for tmr0
 ; led segments x4 is controlled
@@ -165,7 +164,6 @@ init
     config_porta_digit_16f
 
     BANKSEL OPTION_REG
-
 	movlw	b'11000000'
 	movwf	OPTION_REG
 

@@ -98,12 +98,6 @@
 
         
 
-;led_dot_display
-light_dot1      equ  0
-light_dot10      equ  1
-light_dot100    equ  2
-light_dot1000   equ  3 
-light_dot10000   equ  3 
 
 
 ;led_state
@@ -140,11 +134,6 @@ how_many_tmr2_count_1sec    equ .16
 ;configuration of LED procedure
 #define LED_SEGMENT  .4
 
-;ledy
-led1              equ      0
-led10             equ      1
-led100            equ      2
-led1000           equ      3
 
 port_led          equ      PORTB 
 
