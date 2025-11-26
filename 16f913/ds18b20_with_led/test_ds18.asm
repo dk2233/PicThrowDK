@@ -1,0 +1,321 @@
+;this program 
+;sets interrupts for tmr0
+; led segments x4 is controlled
+;increased every 1 sec
+;gpasm  led_example.asm
+
+	list p=16f913
+	include	"p16f913.inc"
+	__CONFIG _WDT_OFF & _MCLRE_ON & _DEBUG_ON & _IESO_OFF  & _FOSC_INTOSCIO & _FCMEN_OFF & _PWRTE_ON & _BOREN_OFF
+    include defines.inc 
+    include ../../PicLibDK/memory_operation_16f.inc
+    include ../../PicLibDK/interrupts.inc
+    include ../../PicLibDK/math/math_macros.inc
+    include ../../PicLibDK/init16f.inc
+    include ../../PicLibDK/macro_time.inc
+    include ../../PicLibDK/display/macro_value_to_digits.inc
+    include ../../PicLibDK/macro_resets.inc
+
+
+
+    org 0000h
+    goto init 
+
+    org 0004h
+interrupts 
+    context_store16f 
+
+    check_tmr0_isr ISR_timer0
+
+    check_tmr1_isr ISR_timer1
+
+    check_tmr2_isr ISR_timer2
+
+ISR_exit
+    context_restore16f
+    retfie
+
+ISR_timer0
+    bcf  INTCON,T0IF
+    BANKSEL led_state
+    bsf led_state, process_led
+
+    goto ISR_exit
+
+
+ISR_timer1 
+    BANKSEL PIR1
+    bcf  PIR1, TMR1IF
+
+    BANKSEL  tmr1_count_to_1sec
+    decfsz tmr1_count_to_1sec,f
+    goto   ISR_timer2_next
+
+    ;increment timer value 
+    BANKSEL program_states
+    bsf   program_states,increment_1sec
+
+    BANKSEL  tmr1_count_to_1sec
+    movlw   how_many_tmr1_count_1sec 
+    movwf   tmr1_count_to_1sec
+    goto  ISR_exit
+
+ISR_timer2
+    ;used for DS18B20
+    BANKSEL PIR1
+    bcf   PIR1, TMR2IF
+ISR_timer2_next
+
+    goto  ISR_exit
+
+
+
+    include ../../PicLibDK/math/math_function_div.asm
+    include ../../PicLibDK/display/led_segment.inc
+    include ../../PicLibDK/sensors/ds1820.inc
+
+
+
+
+translate_value_to_port_pins 
+    ;portc - 4 lower bits 
+    ;portb - 4 lower bits filleds with higher bits from value_for_one_digit_segment
+
+    BANKSEL port_led_L
+
+    movlw  0xf0 
+    andwf  port_led_L,f ;clear lower bits
+    
+    movlw  0xf0 
+    andwf  port_led_H,f ;clear lower bits
+
+    MOVF    value_for_one_digit_segment,w  
+    andlw   0x0f 
+
+    addwf   port_led_L,f 
+
+    swapf   value_for_one_digit_segment,w 
+    andlw   0x0f
+
+    addwf   port_led_H,f  
+
+
+    return
+
+
+
+;TODO move this as increment 16 bit value macro
+change_timer_seconds
+
+    BANKSEL program_states
+    bcf  program_states, increment_1sec
+    
+    BANKSEL led_green_port
+    bcf   led_green_port, led_green_pin
+
+    bcf  operandl,0
+    
+    compare2bytes max_value_to_be_displayed, timer_l , operandl, 0 
+
+    btfsc operandl,0
+    goto  change_timer_seconds_1 
+
+    movlw 0 
+    movwf timer_h
+    movwf timer_l
+    goto change_timer_seconds_2
+
+change_timer_seconds_1
+
+    BANKSEL timer_l
+    incf   timer_l,f 
+    btfsc  STATUS,Z 
+    incf   timer_h,f
+
+change_timer_seconds_2
+    
+    movf  timer_l,w 
+    movwf number_l
+    movf  timer_h,W
+    movwf number_h
+
+
+    call split_number_to_digits
+
+    BANKSEL led_dot_display
+    btfsc led_dot_display, light_dot1 
+    goto  change_timer_seconds_dot_off 
+
+    bsf   led_dot_display, light_dot1 
+    bcf   led_dot_display, light_dot10
+    return
+    
+change_timer_seconds_dot_off
+    BANKSEL led_dot_display
+    bcf   led_dot_display, light_dot1 
+    bsf   led_dot_display, light_dot10
+
+    return
+
+
+temperature_handle
+    BANKSEL program_states
+    bcf   program_states, increment_1sec
+
+    BANKSEL led_green_port
+    btfsc led_green_port,led_green_pin 
+    goto  temperature_handle_led1 
+
+    bsf   led_green_port, led_green_pin
+    goto  temperature_handle_led2
+
+temperature_handle_led1
+    bcf   led_green_port, led_green_pin
+
+temperature_handle_led2
+
+    BANKSEL markers_pomiary
+    btfss markers_pomiary,czekam_na_odczyt_DS1
+    goto   temperature_handle_init_temperature_measurement
+
+;read temperature from ds18
+    call  ds18_req_scratchpad_read
+
+    BANKSEL ds18_status
+    btfss  ds18_status, ds18_crc_fault
+    bcf  led_dot_display,light_dot1  
+
+    ;show dot as crc fault
+
+    btfsc  ds18_status, ds18_crc_fault
+    bsf  led_dot_display,light_dot1  
+
+    xorlw 0 ; check returned value
+    SKPZ ;if not 0 do not refresh temp
+    return
+
+    call  odbierz_pomiary_temp_show_data
+
+    BANKSEL ds18_measured_temp
+    movf   ds18_measured_temp,w 
+    movwf  number_l
+    clrf   number_h 
+
+    call split_number_to_digits 
+    BANKSEL segment_digit1
+    movf segment_digit100,w 
+    movwf segment_digit1000
+    movf segment_digit10,w 
+    movwf segment_digit100
+    movf segment_digit1,w 
+    movwf segment_digit10
+    movf  ds18_measured_temp_01,w 
+    movwf segment_digit1
+    return
+
+
+
+temperature_handle_init_temperature_measurement
+    call ds18_req_temp_convert
+    
+    BANKSEL ds18_status
+    btfsc  ds18_status, ds18_init_error
+    goto   temperature_handle_error
+
+    btfsc ds18_status, ds18_normal_power
+    movlw 1
+    btfsc ds18_status, ds18_parasite_power
+    movlw 0
+    movwf  segment_digit1
+    
+    movwf  segment_digit10
+    movlw  led_minus
+    movwf  segment_digit100
+    movlw  0xd
+    movwf  segment_digit1000
+    return 
+
+temperature_handle_error
+    movlw  led_minus
+    movwf  segment_digit1
+    movwf  segment_digit10
+    movwf  segment_digit100
+
+    return
+
+init 
+    ;config_watchdog  .15, 1
+    config_porta_digit_16f
+
+    BANKSEL OPTION_REG
+    movlw  b'11000000'
+    movwf  OPTION_REG
+
+    ;4 MHz internal OSC used  4/4e6  * 256 * 8 = 2.05 ms => freq = about 488 Hz
+    configure_tmr0  b'010', 1 ;8 prescaler
+    config_tmr1_as_timer  b'11', 1 ; every interrupt pass 524 ms = about 1 sec after two
+    configure_tmr2  2, b'1111', .244 ; 4/4e6 * 16 * 16 * 244 * 16
+
+    configure_ports_16f  PORTA, b'11111100'
+    configure_ports_16f  PORTB, b'11000000'
+    configure_ports_16f  PORTC, b'00110000'
+
+    ;signal reset 
+    BANKSEL led_green_port
+    bsf   led_green_port, led_green_pin
+; OSCCON set for internal 4MHz	
+    config_osccon b'110', 0, 1
+
+	movlw	b'11100000'
+	movwf	INTCON
+
+
+    clear_memory segment_digit1, 0x5f
+    clear_memory dane_odebrane_z_ds, 0x16f - 0x120
+
+    call led_digit_init
+
+    BANKSEL tmr1_count_to_1sec
+    movlw how_many_tmr1_count_1sec
+    movwf tmr1_count_to_1sec
+
+    detect_watchdog_happens 
+    xorlw   wdg_reset_reason
+    btfss   STATUS,Z 
+
+    goto init2 
+
+    BANKSEL led_red_port
+    bsf   led_red_port, led_red_pin
+
+init2
+    ;send 0x33 to ds18b20 
+    
+    call ds18_req_id_read
+
+    ;get power type 0xb4
+    call  ds18_read_power_supply
+
+    
+    goto main 
+
+main 
+    clrwdt
+    BANKSEL program_states
+    btfsc program_states, increment_1sec 
+    call  temperature_handle
+    ;call change_timer_seconds 
+
+    btfsc led_state, process_led
+    call refresh_led
+
+    bcf  led_state, process_led
+
+
+    goto main 
+    END
+
+
+
+
+
