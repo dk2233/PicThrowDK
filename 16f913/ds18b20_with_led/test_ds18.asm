@@ -174,10 +174,11 @@ temperature_handle_led1
 
 temperature_handle_led2
 
-    BANKSEL markers_pomiary
-    btfss markers_pomiary,czekam_na_odczyt_DS1
+    BANKSEL ds18_status
+    btfss ds18_status,ds18_wait_for_measurement    
     goto   temperature_handle_init_temperature_measurement
 
+    bcf ds18_status, ds18_wait_for_measurement
 ;read temperature from ds18
     call  ds18_req_scratchpad_read
 
@@ -211,25 +212,30 @@ temperature_handle_led2
     movwf segment_digit10
     movf  ds18_measured_temp_01,w 
     movwf segment_digit1
+
+    BANKSEL led_dot_display
+    bsf led_dot_display, light_dot10
     return
 
 
 
 temperature_handle_init_temperature_measurement
     call ds18_req_temp_convert
+    BANKSEL led_dot_display
+    bcf  led_dot_display, light_dot10
     
     BANKSEL ds18_status
     btfsc  ds18_status, ds18_init_error
     goto   temperature_handle_error
 
-    btfsc ds18_status, ds18_normal_power
+    btfsc ds18_configuration, ds18_normal_power
     movlw 1
-    btfsc ds18_status, ds18_parasite_power
+    btfsc ds18_configuration, ds18_parasite_power
     movlw 0
     movwf  segment_digit1
     
     movwf  segment_digit10
-    movlw  led_minus
+    movlw  led_S
     movwf  segment_digit100
     movlw  0xd
     movwf  segment_digit1000
@@ -296,6 +302,38 @@ init2
     ;get power type 0xb4
     call  ds18_read_power_supply
 
+    ;get scratchpad 
+    call  ds18_req_scratchpad_read 
+
+    BANKSEL  ds18_expected_resolution 
+    movlw    .12
+    movwf   ds18_expected_resolution
+    BANKISEL dane_odebrane_z_ds
+    movlw  LOW dane_odebrane_z_ds
+    MOVWF  FSR 
+    call ds18_check_resolution
+    BANKSEL ds18_expected_resolution
+    xorwf   ds18_expected_resolution,w 
+    SKPNZ  
+    goto main
+    ;set new config
+    ds18_set_resolution tmp7
+
+    BANKISEL dane_odebrane_z_ds
+    movlw  LOW dane_odebrane_z_ds
+    addlw  DS18B20_TH_byte 
+    movwf  FSR 
+    movf   INDF,w 
+    BANKSEL ds18_TH
+    movwf  ds18_TH 
+    incf   FSR,f 
+    movf   INDF,w 
+    movwf  ds18_TL 
+
+    call  ds18_req_scratchpad_write  
+
+    
+    
     
     goto main 
 
@@ -309,7 +347,7 @@ main
     btfsc led_state, process_led
     call refresh_led
 
-    bcf  led_state, process_led
+    ;bcf  led_state, process_led
 
 
     goto main 

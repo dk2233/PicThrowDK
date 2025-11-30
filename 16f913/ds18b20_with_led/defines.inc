@@ -62,23 +62,21 @@
 	B_low
 	B_high
 
-    status_bits
+    tmp7
+    ;definitions related to ds18b20 measurements
     ds8_CRC_result
     n_bit 
-    znak_rozkazu_ds
     ds18_status
-    jak_duzo_bajtow_odbieram_z_ds 
-    tmp7
-    markers_pomiary
-    polecenie_wysylane
+    ds18_configuration
+    ds18_number_of_receive_bytes 
+    ds18_command_to_be_send
     ds18_measured_temp
     ds18_measured_temp_01
 
-    ds18_call_commandL
-    ds18_call_commandH
-
-    conversion_busyL
-    conversion_busyH
+    ds18_TH ;first byte that will be write to ds18b20
+    ds18_TL
+    ds18_config_byte
+    ds18_expected_resolution
 
 
          endc
