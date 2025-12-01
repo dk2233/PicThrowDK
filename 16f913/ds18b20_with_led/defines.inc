@@ -108,8 +108,12 @@
         cblock 120h
         ds18_read_from_RAM ; tablica odebranych bajtów
 
+
         endc 
 
+        cblock 130h 
+        ds18_read_id
+        endc
         
 
 

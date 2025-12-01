@@ -278,9 +278,20 @@ init
     bsf   led_red_port, led_red_pin
 
 init2
-    ;send 0x33 to ds18b20 
     
     call ds18_req_id_read
+    xorlw 0 
+    SKPNZ 
+    goto init2_read_id_ok
+
+    BANKSEL  led_red_port
+     
+    bsf  led_red_port, led_red_pin
+
+init2_read_id_ok
+    movlw   .8
+    movwf  operandh
+    mem_cpy_FSR  ds18_read_from_RAM, ds18_read_id, operandl, operandh
 
     ;get power type 0xb4
     call  ds18_read_power_supply
