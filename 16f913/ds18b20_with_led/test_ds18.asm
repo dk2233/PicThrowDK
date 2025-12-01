@@ -195,26 +195,9 @@ temperature_handle_led2
     SKPZ ;if not 0 do not refresh temp
     return
 
-    call  odbierz_pomiary_temp_show_data
+    call  ds18_translate_measurements_to_dec
 
-    BANKSEL ds18_measured_temp
-    movf   ds18_measured_temp,w 
-    movwf  number_l
-    clrf   number_h 
-
-    call split_number_to_digits 
-    BANKSEL segment_digit1
-    movf segment_digit100,w 
-    movwf segment_digit1000
-    movf segment_digit10,w 
-    movwf segment_digit100
-    movf segment_digit1,w 
-    movwf segment_digit10
-    movf  ds18_measured_temp_01,w 
-    movwf segment_digit1
-
-    BANKSEL led_dot_display
-    bsf led_dot_display, light_dot10
+    call ds18_convert_dec_measurement_into_4_digits
     return
 
 
@@ -277,7 +260,7 @@ init
 
 
     clear_memory segment_digit1, 0x5f
-    clear_memory dane_odebrane_z_ds, 0x16f - 0x120
+    clear_memory ds18_read_from_RAM, 0x16f - 0x120
 
     call led_digit_init
 
@@ -308,19 +291,19 @@ init2
     BANKSEL  ds18_expected_resolution 
     movlw    .12
     movwf   ds18_expected_resolution
-    BANKISEL dane_odebrane_z_ds
-    movlw  LOW dane_odebrane_z_ds
+    BANKISEL ds18_read_from_RAM
+    movlw  LOW ds18_read_from_RAM
     MOVWF  FSR 
     call ds18_check_resolution
     BANKSEL ds18_expected_resolution
     xorwf   ds18_expected_resolution,w 
     SKPNZ  
-    goto main
+    goto tests
     ;set new config
     ds18_set_resolution tmp7
 
-    BANKISEL dane_odebrane_z_ds
-    movlw  LOW dane_odebrane_z_ds
+    BANKISEL ds18_read_from_RAM
+    movlw  LOW ds18_read_from_RAM
     addlw  DS18B20_TH_byte 
     movwf  FSR 
     movf   INDF,w 
@@ -332,10 +315,67 @@ init2
 
     call  ds18_req_scratchpad_write  
 
-    
-    
-    
-    goto main 
+;here we will check proper calculations of ds18 procedures   
+
+;both temperature conversion to dec from scratchpad
+;+ 
+;conversion to decimal digits to display on led or lcd
+tests 
+    movel_2bytes 0xffe5 , ds18_read_from_RAM
+    call  ds18_translate_measurements_to_dec
+    compare1byte 0x1, ds18_measured_temp, ds18_error_temp_conversion, 0 
+    compare1byte 0x7, ds18_measured_temp_01, ds18_error_temp_conversion, 0 
+    call ds18_convert_dec_measurement_into_4_digits
+    compare4bytes  0x14000107, segment_digit1, ds18_error_temp_display, 0
+
+    movel_2bytes 0xff60 , ds18_read_from_RAM
+    call  ds18_translate_measurements_to_dec
+    compare1byte 0xa, ds18_measured_temp, ds18_error_temp_conversion, 1 
+    compare1byte 0x0, ds18_measured_temp_01, ds18_error_temp_conversion, 1 
+    call ds18_convert_dec_measurement_into_4_digits
+    compare4bytes  0x14010000, segment_digit1, ds18_error_temp_display, 1
+
+    movel_2bytes 0xfc90 , ds18_read_from_RAM
+    call  ds18_translate_measurements_to_dec
+    compare1byte 0x37, ds18_measured_temp, ds18_error_temp_conversion, 2 
+    compare1byte 0x0, ds18_measured_temp_01, ds18_error_temp_conversion, 2 
+    call ds18_convert_dec_measurement_into_4_digits
+    compare4bytes  0x14050500, segment_digit1, ds18_error_temp_display, 2
+
+    movel_2bytes 0xfe6f , ds18_read_from_RAM
+    call  ds18_translate_measurements_to_dec
+    compare1byte .25, ds18_measured_temp, ds18_error_temp_conversion, 3 
+    compare1byte 0x1, ds18_measured_temp_01, ds18_error_temp_conversion, 3 
+
+    call ds18_convert_dec_measurement_into_4_digits
+    compare4bytes  0x14020501, segment_digit1, ds18_error_temp_display, 3
+
+    nop
+    movel_2bytes 0xfff8 , ds18_read_from_RAM
+    call  ds18_translate_measurements_to_dec
+    compare1byte .0, ds18_measured_temp, ds18_error_temp_conversion, 4 
+    compare1byte 0x5, ds18_measured_temp_01, ds18_error_temp_conversion, 4 
+    call ds18_convert_dec_measurement_into_4_digits
+    compare4bytes  0x14000005, segment_digit1, ds18_error_temp_display, 4
+
+    movel_2bytes 0x191 , ds18_read_from_RAM
+    call  ds18_translate_measurements_to_dec
+    compare1byte .25, ds18_measured_temp, ds18_error_temp_conversion, 5 
+    compare1byte 0x1, ds18_measured_temp_01, ds18_error_temp_conversion, 5 
+
+    call ds18_convert_dec_measurement_into_4_digits
+    compare4bytes  0x020501, segment_digit1, ds18_error_temp_display, 5
+
+    movel_2bytes 0xfd96 , ds18_read_from_RAM
+    call  ds18_translate_measurements_to_dec
+    compare1byte .38, ds18_measured_temp, ds18_error_temp_conversion, 6 
+    compare1byte 0x6, ds18_measured_temp_01, ds18_error_temp_conversion, 6 
+
+    call ds18_convert_dec_measurement_into_4_digits
+    compare4bytes  0x14030806, segment_digit1, ds18_error_temp_display, 6
+    ;check if any of errors status is not 0
+    compare2bytes 0, ds18_error_temp_conversion, led_red_port, led_red_pin
+
 
 main 
     clrwdt

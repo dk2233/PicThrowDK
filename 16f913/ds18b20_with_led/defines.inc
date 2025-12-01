@@ -78,6 +78,8 @@
     ds18_config_byte
     ds18_expected_resolution
 
+    ds18_error_temp_conversion
+    ds18_error_temp_display
 
          endc
          
@@ -104,7 +106,7 @@
 
 
         cblock 120h
-        dane_odebrane_z_ds ; tablica odebranych bajtów
+        ds18_read_from_RAM ; tablica odebranych bajtów
 
         endc 
 

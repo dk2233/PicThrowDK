@@ -9,7 +9,8 @@ It depends on PicLibDK repository
     for pic16f628a, also pic16f913 
     look to specific folders
 
-2. TBD    
-
+2. DS18B20 usage 
+    ![Pic16f913 ds18b20 with led segments](16f913/ds18b20_with_led/ds18b20_16f913_example.png)
+    for pic16f913 so far (requires tmr2 for measurements)    
 
 
