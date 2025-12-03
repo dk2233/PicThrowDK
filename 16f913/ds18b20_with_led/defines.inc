@@ -80,6 +80,10 @@
 
     ds18_error_temp_conversion
     ds18_error_temp_display
+    ds18_number_of_sensors
+    ds18_received_id_byte_count
+    ds18_id_bit
+    ds18_id_which_byte
 
          endc
          
@@ -105,14 +109,23 @@
          
 
 
-        cblock 120h
-        ds18_read_from_RAM ; tablica odebranych bajtów
+        cblock 0xa0
+        ds18_read_from_RAM : 9; tablica odebranych bajtów
+        ds18_read_one_id:8
+
 
 
         endc 
 
-        cblock 130h 
-        ds18_read_id
+        cblock 120h 
+        ds18_read_id_1:8
+        ds18_read_id_2:8
+        ds18_read_id_3:8
+        ds18_read_id_4:8
+
+        endc
+
+        cblock 198h
         endc
         
 

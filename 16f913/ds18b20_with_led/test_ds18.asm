@@ -260,7 +260,8 @@ init
 
 
     clear_memory segment_digit1, 0x5f
-    clear_memory ds18_read_from_RAM, 0x16f - 0x120
+    clear_memory ds18_read_from_RAM, 0xef - 0xa0
+    clear_memory  ds18_read_id_1,  0x16f - 0x120
 
     call led_digit_init
 
@@ -291,8 +292,9 @@ init2
 init2_read_id_ok
     movlw   .8
     movwf  operandh
-    mem_cpy_FSR  ds18_read_from_RAM, ds18_read_id, operandl, operandh
+    mem_cpy_FSR  ds18_read_from_RAM, ds18_read_one_id, operandl, operandh
 
+    call ds18_search_rom
     ;get power type 0xb4
     call  ds18_read_power_supply
 
