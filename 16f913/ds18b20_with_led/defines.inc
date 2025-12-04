@@ -69,6 +69,7 @@
     ds18_status
     ds18_configuration
     ds18_number_of_receive_bytes 
+    ds18_number_of_bytes
     ds18_command_to_be_send
     ds18_measured_temp
     ds18_measured_temp_01
@@ -81,9 +82,12 @@
     ds18_error_temp_conversion
     ds18_error_temp_display
     ds18_number_of_sensors
-    ds18_received_id_byte_count
+    ds18_which_sensor_id_measure_offset
+    ds18_which_sensor_count
+    ds18_received_id_bit_count
     ds18_id_bit
     ds18_id_which_byte
+    ds18_id_RAM_offset
 
          endc
          
@@ -112,6 +116,8 @@
         cblock 0xa0
         ds18_read_from_RAM : 9; tablica odebranych bajtów
         ds18_read_one_id:8
+        stack_sp
+        stack_of_differences:8
 
 
 

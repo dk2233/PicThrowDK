@@ -15,6 +15,7 @@
     include ../../PicLibDK/macro_time.inc
     include ../../PicLibDK/display/macro_value_to_digits.inc
     include ../../PicLibDK/macro_resets.inc
+    include ../../PicLibDK/stacks/macro_stack_operation.inc
 
 
 
@@ -157,6 +158,23 @@ change_timer_seconds_dot_off
 
     return
 
+temperature_handle_choose_id
+    BANKSEL ds18_which_sensor_id_measure_offset
+    BANKISEL ds18_read_id_1
+    movf    ds18_which_sensor_id_measure_offset,w 
+    movwf FSR 
+
+    movf  INDF,w 
+    SKPZ 
+    return
+
+    movlw LOW ds18_read_id_1
+    BANKSEL ds18_which_sensor_id_measure_offset
+    movwf ds18_which_sensor_id_measure_offset
+    movwf FSR 
+    movlw 1 
+    movwf ds18_which_sensor_count
+    return
 
 temperature_handle
     BANKSEL program_states
@@ -180,7 +198,14 @@ temperature_handle_led2
 
     bcf ds18_status, ds18_wait_for_measurement
 ;read temperature from ds18
+    call temperature_handle_choose_id
     call  ds18_req_scratchpad_read
+    movwf result_ll
+
+    movlw DS18B20_id_size
+    BANKSEL ds18_which_sensor_id_measure_offset
+    addwf ds18_which_sensor_id_measure_offset,f
+    incf ds18_which_sensor_count,f
 
     BANKSEL ds18_status
     btfss  ds18_status, ds18_crc_fault
@@ -190,7 +215,8 @@ temperature_handle_led2
 
     btfsc  ds18_status, ds18_crc_fault
     bsf  led_dot_display,light_dot1  
-
+    ;check result
+    movf  result_ll,w 
     xorlw 0 ; check returned value
     SKPZ ;if not 0 do not refresh temp
     return
@@ -203,6 +229,8 @@ temperature_handle_led2
 
 
 temperature_handle_init_temperature_measurement
+    call temperature_handle_choose_id
+
     call ds18_req_temp_convert
     BANKSEL led_dot_display
     bcf  led_dot_display, light_dot10
@@ -215,8 +243,9 @@ temperature_handle_init_temperature_measurement
     movlw 1
     btfsc ds18_configuration, ds18_parasite_power
     movlw 0
+    BANKSEL segment_digit1
     movwf  segment_digit1
-    
+    movf   ds18_which_sensor_count,w
     movwf  segment_digit10
     movlw  led_S
     movwf  segment_digit100
@@ -226,11 +255,24 @@ temperature_handle_init_temperature_measurement
 
 temperature_handle_error
     movlw  led_minus
+    BANKSEL segment_digit1
     movwf  segment_digit1
     movwf  segment_digit10
     movwf  segment_digit100
 
     return
+
+
+push 
+    
+    m_push_to_stack stack_of_differences, stack_sp, operandh
+    return 
+
+
+pop 
+    m_pop_stack  stack_of_differences, stack_sp 
+    ;in W return value
+    return  
 
 init 
     ;config_watchdog  .15, 1
@@ -294,7 +336,11 @@ init2_read_id_ok
     movwf  operandh
     mem_cpy_FSR  ds18_read_from_RAM, ds18_read_one_id, operandl, operandh
 
-    call ds18_search_rom
+    call ds18_search_rom_all_sensors
+
+    BANKSEL ds18_configuration
+    bsf  ds18_configuration, ds18_multiple_sensors
+
     ;get power type 0xb4
     call  ds18_read_power_supply
 
