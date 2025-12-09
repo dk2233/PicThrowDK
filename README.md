@@ -9,8 +9,22 @@ It depends on PicLibDK repository
     for pic16f628a, also pic16f913 
     look to specific folders
 
-2. DS18B20 usage 
-    ![Pic16f913 ds18b20 with led segments](16f913/ds18b20_with_led/ds18b20_16f913_example.png)
-    for pic16f913 so far (requires tmr2 for measurements)    
+2. DS18B20 usage with one ds18b20
+    ![Pic16f913 ds18b20 with led segments](16f913/ds18b20_with_led/ds18b20_16f913_example.jpg)
+    for pic16f913 with one or multiple sensors connected on same pin.
+    
+3. DS18B20 with cheap pic16f913
+    System is capable of detecting id of each of the connected sensors
+    and based on that communicate with them. Temperature is shown on the screen one after one sensors (second 1 is information abour normal or parasite power - 1 
+    means normal)    
+    Symbol shows that measurement of second connected sensor will be displayed
+    ![Ds18b20 second connected sensor](16f913/ds18b20_with_led/ds18b20_16f913_ds21.jpg)
+    And is displayed
+    ![Ds18b20 second connected sensor temperature](16f913/ds18b20_with_led/ds18b20_16f913_192.jpg)
+    Symbol shows that measurement of 4th connected sensor will be displayed
+    ![Ds18b20 second connected sensor](16f913/ds18b20_with_led/ds18b20_16f913_ds41.jpg)
+    And is displayed
+    ![Ds18b20 second connected sensor temperature](16f913/ds18b20_with_led/ds18b20_16f913_194.jpg)
+
 
 
