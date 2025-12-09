@@ -40,8 +40,11 @@
 	errors16bit
 	errors_sum_loop
 	errors_div
+	errors_compare_arrays
 
 	status_bits 
+	array2:6
+	array3:8
 
 
 	endc
@@ -65,6 +68,9 @@
 	number_h
 	endc	
 
+
+array1_size equ .32
+
 	cblock 120h
 	var2
 	timer_l
@@ -80,10 +86,12 @@
 	count_to_test
 	wdg_timeout_marker
 
-errors
+	array1:array1_size
+	
+
+	errors
 
 	endc
-
 
 freq 	equ 10000000
 

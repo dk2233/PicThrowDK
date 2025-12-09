@@ -90,7 +90,7 @@ init
 	movwf	INTCON
 
 
-    clear_memory  var1,0x5f ; here status_bits is cleared
+    clear_memory  var1,0x7f - 0x20 ; here status_bits is cleared
 
     BANKSEL var2
     movlw  0
@@ -108,7 +108,7 @@ init
 
 init2
     clear_memory 0xa0,10
-    clear_memory var2, 30
+    clear_memory var2, 0x16f - var2 
     
     ;end init
 
@@ -473,9 +473,60 @@ main_wdg_detected
     compare3bytes    0x000003, result_ll, errors_div, 7
     compare2bytes     0x1a85 ,  fraction_l, errors_div, 7 ; reminder
 
+
+array_values1   equ   0xfe561234
+array_values2   equ   0x01020304 
+array_values3   equ   0x12340a40
+array_values4   equ   0x0a0b0c0d
+array_values5   equ   0x0045fe56
+array_values6   equ   0x12340102
+    nop
+    movel_4bytes  array_values1, array2
+    nop
+    movel_4bytes  array_values2, array3
+
+    movel_4bytes array_values1 , array1 
+    movel_4bytes array_values3, array1+4 
+    movel_4bytes array_values5, array1+8
+    movel_4bytes array_values5, array1+.12
+    movel_4bytes array_values6, array1+.16
+
+    movlw  LOW (array1+array1_size)
+    movwf  result_001
+    
+    store_address_of_variable_irp array2, fraction_l
+
+    mem_search_data_on_array  array1, operandh, operandl, result_001, 4, fraction_h, fraction_l, number_l, number_h, result_ll
+
+    compare1byte  2, result_ll, errors_compare_arrays, 0 
+
+    nop 
+    store_address_of_variable_irp array3, fraction_l
+
+    mem_search_data_on_array  array1, operandh, operandl, result_001, 4, fraction_h, fraction_l, number_l, number_h, result_ll
+    
+    compare1byte 0, result_ll, errors_compare_arrays, 1
+    nop 
+    movel_4bytes  array_values5, array3
+    store_address_of_variable_irp array3, fraction_l
+
+    mem_search_data_on_array  array1, operandh, operandl, result_001, 4, fraction_h, fraction_l, number_l, number_h, result_ll
+    
+    compare1byte 2, result_ll, errors_compare_arrays, 2
+    nop
+    copy_data_from_ROM operandl, array1, text1
+    nop 
+    copy_data_from_ROM operandl, array3, text3
+    store_address_of_variable_irp array3, fraction_l 
+
+    mem_search_data_on_array  array1, operandh, operandl, result_001, 6, fraction_h, fraction_l, number_l, number_h, result_ll
+    compare1byte 2, result_ll, errors_compare_arrays, 3
+
     nop
     ;check for 4 errors if any is set
     compare4bytes 0,  errors_mul_8bit, status_bits, 0 
+
+    compare1byte  0 , errors_compare_arrays, status_bits, 0 
 
     PAGESEL led_off
     btfsc   led_green_port,led_green_pin
@@ -500,4 +551,17 @@ led_off
 
      PAGESEL main
     goto main
+
+;EEPROM
+;    org __EEPROM_START
+    ;org 0
+text1     
+    addwf PCL,f
+    dt "saaam string1,string",0
+text2
+    addwf PCL,f
+     dt "2,text,abcd:",0
+text3
+    addwf PCL,f 
+    dt "string",0
     end
