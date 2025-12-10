@@ -128,6 +128,8 @@
         ds18_read_id_2:8
         ds18_read_id_3:8
         ds18_read_id_4:8
+        ds18_read_id_5:8
+        ds18_read_id_6:8
 
         endc
 
@@ -164,7 +166,7 @@ run_system equ 7
 
 
 how_many_tmr2_count_1sec    equ .16
-how_many_tmr1_count_1sec    equ .3
+how_many_tmr1_count_1sec    equ .2
 
 
 
