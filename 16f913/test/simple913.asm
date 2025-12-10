@@ -63,7 +63,7 @@ ISR_timer0
 ISR_timer0_1
     goto ISR_exit
 
-    org 800h
+    ;org 800h
 init 
 
     config_watchdog  .10, 1
@@ -127,6 +127,31 @@ init2
     movlw   count_to_wdg_timeout
     movwf  count_to_test
 
+    PAGESEL main 
+    goto main 
+
+;EEPROM
+;    org __EEPROM_START
+    ;org 0
+text1     
+    addwf PCL,f
+    dt "saaam string1,string",0
+text2
+    addwf PCL,f
+     dt "2,text,abcd:",0
+text3
+    addwf PCL,f 
+    dt "string",0
+text4 
+    addwf PCL,f 
+    dt "abc,abc,abc,ddd,abcd",0
+text_abc
+    addwf PCL,f 
+    dt "abc",0
+
+
+
+    org 800h
     
 main 
 ;here are some "regression tests" 
@@ -523,9 +548,17 @@ array_values6   equ   0x12340102
     compare1byte 2, result_ll, errors_compare_arrays, 3
 
     nop
+    copy_data_from_ROM operandl, array1, text4
+    nop 
+    copy_data_from_ROM operandl, array2, text_abc
+    store_address_of_variable_irp array2, fraction_l 
+
+    mem_search_data_on_array  array1, operandh, operandl, result_001, 3, fraction_h, fraction_l, number_l, number_h, result_ll
+    compare1byte 4, result_ll, errors_compare_arrays, 4
+    
     ;check for 4 errors if any is set
     compare4bytes 0,  errors_mul_8bit, status_bits, 0 
-
+    NOP
     compare1byte  0 , errors_compare_arrays, status_bits, 0 
 
     PAGESEL led_off
@@ -552,16 +585,4 @@ led_off
      PAGESEL main
     goto main
 
-;EEPROM
-;    org __EEPROM_START
-    ;org 0
-text1     
-    addwf PCL,f
-    dt "saaam string1,string",0
-text2
-    addwf PCL,f
-     dt "2,text,abcd:",0
-text3
-    addwf PCL,f 
-    dt "string",0
     end
