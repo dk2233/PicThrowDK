@@ -207,6 +207,4 @@ max_value_to_be_displayed   equ  .9999
 port_ds18b20   equ     PORTA
 port_pin_ds18b20    equ    2
 tris_of_ds18b20_port   equ  TRISA
-ds18b20_tmr2_value_to_wait_480us    equ  .245
-ds18b20_tmr2_value_to_wait_60us    equ  .30
-
+#define minus_symbol   led_minus

@@ -158,6 +158,13 @@ change_timer_seconds_dot_off
 
     return
 
+
+temperature_handle_ds18_conversion_led
+
+    ds18_convert_dec_measurement_into_4_digits_display  segment_digit1, number_l
+    return 
+
+
 temperature_handle_choose_id
     BANKSEL ds18_which_sensor_id_measure_offset
     BANKISEL ds18_read_id_1
@@ -223,7 +230,9 @@ temperature_handle_led2
 
     call  ds18_translate_measurements_to_dec
 
-    call ds18_convert_dec_measurement_into_4_digits
+    call temperature_handle_ds18_conversion_led
+    BANKSEL led_dot_display
+    bsf led_dot_display, light_dot10
     return
 
 
@@ -384,21 +393,21 @@ tests
     call  ds18_translate_measurements_to_dec
     compare1byte 0x1, ds18_measured_temp, ds18_error_temp_conversion, 0 
     compare1byte 0x7, ds18_measured_temp_01, ds18_error_temp_conversion, 0 
-    call ds18_convert_dec_measurement_into_4_digits
+    call temperature_handle_ds18_conversion_led
     compare4bytes  0x14000107, segment_digit1, ds18_error_temp_display, 0
 
     movel_2bytes 0xff60 , ds18_read_from_RAM
     call  ds18_translate_measurements_to_dec
     compare1byte 0xa, ds18_measured_temp, ds18_error_temp_conversion, 1 
     compare1byte 0x0, ds18_measured_temp_01, ds18_error_temp_conversion, 1 
-    call ds18_convert_dec_measurement_into_4_digits
+    call temperature_handle_ds18_conversion_led
     compare4bytes  0x14010000, segment_digit1, ds18_error_temp_display, 1
 
     movel_2bytes 0xfc90 , ds18_read_from_RAM
     call  ds18_translate_measurements_to_dec
     compare1byte 0x37, ds18_measured_temp, ds18_error_temp_conversion, 2 
     compare1byte 0x0, ds18_measured_temp_01, ds18_error_temp_conversion, 2 
-    call ds18_convert_dec_measurement_into_4_digits
+    call temperature_handle_ds18_conversion_led
     compare4bytes  0x14050500, segment_digit1, ds18_error_temp_display, 2
 
     movel_2bytes 0xfe6f , ds18_read_from_RAM
@@ -406,7 +415,7 @@ tests
     compare1byte .25, ds18_measured_temp, ds18_error_temp_conversion, 3 
     compare1byte 0x1, ds18_measured_temp_01, ds18_error_temp_conversion, 3 
 
-    call ds18_convert_dec_measurement_into_4_digits
+    call temperature_handle_ds18_conversion_led
     compare4bytes  0x14020501, segment_digit1, ds18_error_temp_display, 3
 
     nop
@@ -414,7 +423,7 @@ tests
     call  ds18_translate_measurements_to_dec
     compare1byte .0, ds18_measured_temp, ds18_error_temp_conversion, 4 
     compare1byte 0x5, ds18_measured_temp_01, ds18_error_temp_conversion, 4 
-    call ds18_convert_dec_measurement_into_4_digits
+    call temperature_handle_ds18_conversion_led
     compare4bytes  0x14000005, segment_digit1, ds18_error_temp_display, 4
 
     movel_2bytes 0x191 , ds18_read_from_RAM
@@ -422,7 +431,7 @@ tests
     compare1byte .25, ds18_measured_temp, ds18_error_temp_conversion, 5 
     compare1byte 0x1, ds18_measured_temp_01, ds18_error_temp_conversion, 5 
 
-    call ds18_convert_dec_measurement_into_4_digits
+    call temperature_handle_ds18_conversion_led
     compare4bytes  0x020501, segment_digit1, ds18_error_temp_display, 5
 
     movel_2bytes 0xfd96 , ds18_read_from_RAM
@@ -430,7 +439,7 @@ tests
     compare1byte .38, ds18_measured_temp, ds18_error_temp_conversion, 6 
     compare1byte 0x6, ds18_measured_temp_01, ds18_error_temp_conversion, 6 
 
-    call ds18_convert_dec_measurement_into_4_digits
+    call temperature_handle_ds18_conversion_led
     compare4bytes  0x14030806, segment_digit1, ds18_error_temp_display, 6
     ;check if any of errors status is not 0
     compare2bytes 0, ds18_error_temp_conversion, led_red_port, led_red_pin
