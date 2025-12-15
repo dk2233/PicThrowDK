@@ -1,9 +1,6 @@
     list p=p16f913
     include p16f913.inc
-    .file "main.asm"
 
-	__CONFIG _WDT_OFF & _MCLRE_ON & _DEBUG_ON & _IESO_OFF  & _FOSC_INTOSCIO & _FCMEN_OFF & _PWRTE_ON & _BOREN_OFF
-    ;include defines.inc 
     include symbols.inc
     include ../../PicLibDK/memory_operation_16f.inc
     include ../../PicLibDK/math/math_macros.inc
@@ -17,18 +14,19 @@ fsr_temp  res 1
 w_temp  res 1
 status_temp res 1 
 pclath_temp res 1
-led_state  res 1
 tmr1_count_to_1sec res 1 
 program_states  res 1
 tmp7 res 1
 stack_sp res 1 
 stack_of_differences res .32
+value_for_one_digit_segment res 1
 
 
-
+    global value_for_one_digit_segment
     global tmp7
     global stack_sp, stack_of_differences
     global tmr1_count_to_1sec
+    global _start, _reset, ISR_procedure, main_loop, program_states
     extern init 
     include ../../PicLibDK/interrupts.inc
     
@@ -37,7 +35,7 @@ _reset
     PAGESEL _start
     goto  _start  
 isr_vector code 
-     
+ISR_procedure     
 
     context_store16f 
 
@@ -54,8 +52,8 @@ ISR_exit
 _start code
 ISR_timer0
     bcf  INTCON,T0IF
-    BANKSEL led_state
-    bsf led_state, process_led
+    ;BANKSEL led_state
+    ;bsf led_state, process_led
 
     goto ISR_exit
 
@@ -86,10 +84,9 @@ ISR_timer2_next
     goto  ISR_exit
 
 _start 
-
+    PAGESEL init
     call init 
 main_loop 
     nop
     goto main_loop
     END 
-    .eof

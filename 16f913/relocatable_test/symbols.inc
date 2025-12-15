@@ -1,4 +1,34 @@
 
+;RA0 - 
+;RA1 - 
+;RA2 - 
+;RA3 - 
+;RA4 - 
+;RA5 - 
+;RA6 - 
+;RA7 - 
+
+
+;RB7 - ICD
+;RB6 - ICD
+;RB5 - LED CC 1000
+;RB4 - LED CC 100
+;RB3 - LED
+;RB2 - LED
+;RB1 - LED
+;RB0 - LED 
+
+
+
+
+;RC7 - 
+;RC6 - 
+;RC5 - LED CC 10
+;RC4 - LED CC 1
+;RC3 - LED
+;RC2 - LED
+;RC1 - LED
+;RC0 - LED
 ;led_state
 previous_0            equ      4;jezeli jest wlaczony to poprzednia cyfra nie byla wyswietlana bo byla 0
 process_led      equ     5 

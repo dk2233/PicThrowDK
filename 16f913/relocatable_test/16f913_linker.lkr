@@ -30,6 +30,7 @@ SHAREBANK  NAME=gprnobnk   START=0x1F0           END=0x1FF          PROTECTED
 SECTION    NAME=reset_vector ROM=reset_vec   
 SECTION    NAME=isr_vector   ROM=isr_vec  
 SECTION    NAME=common_var   RAM=gprnobnk 
+SECTION    NAME=ds18_ids     RAM=gpr1
 SECTION    NAME=PROG1      ROM=page0           // ROM code space - page0
 SECTION    NAME=PROG2      ROM=page1           // ROM code space - page1
 SECTION    NAME=IDLOCS     ROM=.idlocs         // ID locations

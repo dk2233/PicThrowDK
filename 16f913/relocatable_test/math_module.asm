@@ -1,4 +1,3 @@
-    .file "math"
     list p=16f913 
     include "p16f913.inc"
     global func_div_24bit_16bit
@@ -36,5 +35,4 @@ func_div_24bit_16bit
     macro_division_16f_24bit_16bit  result_hl, result_lh, result_ll, operandh, operandl, fraction_h, fraction_l, result_001 
     
     return
-    .eof
-    END
+   END

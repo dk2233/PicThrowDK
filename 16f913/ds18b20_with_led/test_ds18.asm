@@ -343,7 +343,7 @@ init2
 init2_read_id_ok
     movlw   .8
     movwf  operandh
-    mem_cpy_FSR  ds18_read_from_RAM, ds18_read_one_id, operandl, operandh
+    mem_cpy_FSR  ds18_read_from_RAM, ds18_read_id_1, operandl, operandh
 
     call ds18_search_rom_all_sensors
 

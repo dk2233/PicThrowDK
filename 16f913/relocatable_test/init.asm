@@ -1,7 +1,8 @@
 
-    .file "init.asm"
+    ;.file "init.asm"
 
     list p=16f913
+	__CONFIG _WDT_OFF & _MCLRE_ON & _DEBUG_ON & _IESO_OFF  & _FOSC_INTOSCIO & _FCMEN_OFF & _PWRTE_ON & _BOREN_OFF
 	include	"p16f913.inc"
     include ../../PicLibDK/memory_operation_16f.inc
     include ../../PicLibDK/interrupts.inc
@@ -15,9 +16,9 @@ pclath_temp  res  1
 fsr_temp  res 1
 
 
-    extern operandl, operandh, tmr1_count_to_1sec
-    global w_temp, status_temp, pclath_temp, fsr_temp
     code
+    global w_temp, status_temp, pclath_temp, fsr_temp
+    extern operandl, operandh, tmr1_count_to_1sec
     global init
 
     include symbols.inc
@@ -83,4 +84,4 @@ init2
     call ds18b20_start
     return
     END
-    .eof
+    ;.eof

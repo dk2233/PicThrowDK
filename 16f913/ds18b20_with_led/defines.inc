@@ -64,7 +64,7 @@
 
     tmp7
     ;definitions related to ds18b20 measurements
-    ds8_CRC_result
+    ds18_CRC_result
     n_bit 
     ds18_status
     ds18_configuration
@@ -115,7 +115,6 @@
 
         cblock 0xa0
         ds18_read_from_RAM : 9; tablica odebranych bajtów
-        ds18_read_one_id:8
         stack_sp
         stack_of_differences:8
 

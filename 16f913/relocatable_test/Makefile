@@ -8,10 +8,10 @@ OUTPUT = test_reloc.hex
 all:		$(OUTPUT)
 
 $(OUTPUT):	$(OBJECTS) $(SCRIPT)
-	gplink -O0 -m -s $(SCRIPT) -c $(OBJECTS) -o $(OUTPUT)
+	gplink  -u -O2 -m -S2 -s $(SCRIPT) -c $(OBJECTS) -o $(OUTPUT)
 
 %.o:		%.asm
-	$(CC) -M -g -e ON -c $<
+	$(CC) -p 16f913 -L -f -S0 -e ON -c $<
 
 clean:
 	rm -f *.o *.lst *.map *.hex
