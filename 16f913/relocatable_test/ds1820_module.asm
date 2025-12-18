@@ -6,27 +6,36 @@
     include ../../PicLibDK/stacks/macro_stack_operation.inc
     include ../../PicLibDK/macro_time.inc
     include ../../PicLibDK/interrupts.inc
+    include ../../PicLibDK/display/led_defines.inc
+    include ../../PicLibDK/display/macro_value_to_digits.inc
 
 ds18_udata udata
 
 ds18_config_byte   res 1 
 ds18_configuration  res 1
-ds18_number_of_bytes  res 1
+ds18_status  res 1
 ds18_command_to_be_send  res 1
+ds18_number_of_bytes  res 1
 ds18_id_bit  res  1
 ds18_id_which_byte  res 1
 ds18_id_RAM_offset res 1
+ds18_received_id_bit_count  res 1
+ds18_number_of_receive_bytes res 1 
+
 ds18_number_of_sensors  res 1
 ds18_CRC_result  res 1
-ds18_status  res 1
+
 ds18_measured_temp_01 res 1 
 ds18_measured_temp    res 1
-ds18_number_of_receive_bytes res 1 
-ds18_received_id_bit_count  res 1
+
 ds18_TH res 1 
 ds18_TL res 1
 ds18_expected_resolution res 1
+ds18_which_sensor_id_measure_offset res 1
+ds18_which_sensor_count  res 1
 n_bit  res 1 
+;temperature_handle_choose_id res 1 
+
 
 ;this has to be located in one of continous sections
 ds18_ids udata
@@ -40,65 +49,57 @@ ds18_read_id_6 res 8
 ds18_read_id_7 res 8 
 ds18_read_id_8 res 8 
 
-    extern result_001, result_01, result_ll, result_lh , result_H 
+    extern result_001, result_01, result_ll, result_lh , result_hl, result_H 
     extern fraction_l, fraction_h, stack_sp, stack_of_differences 
     extern number_l, number_h
     extern operandl, operandh
     extern tmp7
-    extern value_for_one_digit_segment
+    extern value_for_one_digit_segment, segment_digit
+    extern program_states
+    extern led_dot_display
+    extern func_div_24bit_16bit
 
     
-
-
-
-
-
-    global translate_value_to_port_pins
-    global ds18b20_start
-    global ds18_read_id_1, ds18_read_id_2, ds18_read_id_3
+;global variables
+    global ds18_read_id_1, ds18_read_id_2, ds18_read_id_3, ds18_read_id_4, ds18_read_id_5
     global ds18_read_from_RAM
-    global ds18_status
     global ds18_CRC_result
-    global ds18_search_rom_all_sensors 
-    global init_ds1820, check_ds_processing, ds18_match_or_skip_rom, ds18_req_temp_convert
-    global ds18_req_scratchpad_read, ds18_req_scratchpad_write, ds18_read_power_supply
-    global ds18_req_id_read, ds18_search_rom, ds18_send_request_loop_send_byte_start
-    global ds18_check_resolution
+    global ds18_status
+    global ds18_which_sensor_count
+    global ds18_received_id_bit_count
+
+
+
+;functions global
     global ds18_translate_measurements_to_dec, ds18_receive_data_from_sensor, check_CRC_DS
     global PIN_HI, PIN_LO, send_bit_1, send_bit_0
-    
-    CODE 
-    include ../../PicLibDK/sensors/ds1820.inc
+    global ds18_temperature_handle
+    global ds18b20_start
+    global ds18_search_rom_all_sensors 
+    global ds18_req_scratchpad_read, ds18_req_scratchpad_write, ds18_read_power_supply
+    global init_ds1820, check_ds_processing, ds18_match_or_skip_rom, ds18_req_temp_convert
+    global ds18_req_id_read, ds18_search_rom, ds18_send_request_loop_send_byte_start
+    global ds18_check_resolution
+
+
+ds18_tab_code code
+    include ../../PicLibDK/sensors/ds1820_fraction_tab.inc
+
+ds18_code    CODE 
     include symbols.inc
+    include ../../PicLibDK/sensors/ds1820.inc
 
 
 
 
 
-translate_value_to_port_pins 
-    ;portc - 4 lower bits 
-    ;portb - 4 lower bits filleds with higher bits from value_for_one_digit_segment
-
-    BANKSEL port_led_L
-
-    movlw  0xf0 
-    andwf  port_led_L,f ;clear lower bits
-    
-    movlw  0xf0 
-    andwf  port_led_H,f ;clear lower bits
-
-    MOVF    value_for_one_digit_segment,w  
-    andlw   0x0f 
-
-    addwf   port_led_L,f 
-
-    swapf   value_for_one_digit_segment,w 
-    andlw   0x0f
-
-    addwf   port_led_H,f  
 
 
-    return
+temperature_handle_ds18_conversion_led
+
+    ds18_convert_dec_measurement_into_4_digits_display  segment_digit, number_l
+    return 
+
 
 ds18b20_start
 
@@ -133,10 +134,10 @@ ds18b20_start
     ;set new config
     ;ds18_set_resolution tmp7
 
-    BANKISEL ds18_read_from_RAM
     movlw  LOW ds18_read_from_RAM
     addlw  DS18B20_TH_byte 
     movwf  FSR 
+    BANKISEL ds18_read_from_RAM
     movf   INDF,w 
     BANKSEL ds18_TH
     movwf  ds18_TH 
@@ -145,4 +146,114 @@ ds18b20_start
     movwf  ds18_TL 
 
     call  ds18_req_scratchpad_write  
+    return
+
+ds18_temperature_handle_choose_id
+
+    BANKSEL ds18_which_sensor_id_measure_offset
+    movf    ds18_which_sensor_id_measure_offset,w 
+    BANKISEL ds18_read_id_1
+    movwf FSR 
+
+    movf  INDF,w 
+    SKPZ 
+    return
+
+    movlw LOW ds18_read_id_1
+    BANKSEL ds18_which_sensor_id_measure_offset
+    movwf ds18_which_sensor_id_measure_offset
+    movwf FSR 
+    movlw 1 
+    movwf ds18_which_sensor_count
+    return
+
+ds18_temperature_handle
+    BANKSEL program_states
+    bcf   program_states, increment_1sec
+
+    BANKSEL led_green_port
+    btfsc led_green_port,led_green_pin 
+    goto  temperature_handle_led1 
+
+    bsf   led_green_port, led_green_pin
+    goto  temperature_handle_led2
+
+temperature_handle_led1
+    bcf   led_green_port, led_green_pin
+
+temperature_handle_led2
+
+    BANKSEL ds18_status
+    btfss ds18_status,ds18_wait_for_measurement    
+    goto   temperature_handle_init_temperature_measurement
+
+    bcf ds18_status, ds18_wait_for_measurement
+;read temperature from ds18
+    call ds18_temperature_handle_choose_id
+    call  ds18_req_scratchpad_read
+    movwf result_ll
+
+    movlw DS18B20_id_size
+    BANKSEL ds18_which_sensor_id_measure_offset
+    addwf ds18_which_sensor_id_measure_offset,f
+    incf ds18_which_sensor_count,f
+
+    BANKSEL ds18_status
+    btfss  ds18_status, ds18_crc_fault
+    bcf  led_dot_display,light_dot1  
+
+    ;show dot as crc fault
+
+    btfsc  ds18_status, ds18_crc_fault
+    bsf  led_dot_display,light_dot1  
+    ;check result
+    movf  result_ll,w 
+    xorlw 0 ; check returned value
+    SKPZ ;if not 0 do not refresh temp
+    return
+
+    call  ds18_translate_measurements_to_dec
+
+    PAGESEL temperature_handle_ds18_conversion_led
+    call temperature_handle_ds18_conversion_led
+    BANKSEL led_dot_display
+    bsf led_dot_display, light_dot10
+    return
+
+
+
+temperature_handle_init_temperature_measurement
+    call ds18_temperature_handle_choose_id
+
+    call ds18_req_temp_convert
+    BANKSEL led_dot_display
+    bcf  led_dot_display, light_dot10
+    
+    BANKSEL ds18_status
+    btfsc  ds18_status, ds18_init_error
+    goto   temperature_handle_error
+
+    btfsc ds18_configuration, ds18_normal_power
+    movlw 1
+    btfsc ds18_configuration, ds18_parasite_power
+    movlw 0
+    BANKSEL segment_digit
+    movwf  segment_digit
+    BANKSEL ds18_which_sensor_count
+    movf   ds18_which_sensor_count,w
+    movwf  segment_digit+1
+    movlw  led_S
+    movwf  segment_digit+2
+    movlw  0xd
+    movwf  segment_digit+3
+    return 
+
+temperature_handle_error
+    movlw  led_minus
+    BANKSEL segment_digit
+    movwf  segment_digit
+    movwf  segment_digit+1
+    movwf  segment_digit+2
+
+    return
     END

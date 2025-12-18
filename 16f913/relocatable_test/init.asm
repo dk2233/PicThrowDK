@@ -9,15 +9,9 @@
     include ../../PicLibDK/init16f.inc
     include ../../PicLibDK/macro_time.inc
 
-common_var    udata  
-w_temp  res 1
-status_temp res 1
-pclath_temp  res  1
-fsr_temp  res 1
 
 
     code
-    global w_temp, status_temp, pclath_temp, fsr_temp
     extern operandl, operandh, tmr1_count_to_1sec
     global init
 
@@ -30,6 +24,7 @@ fsr_temp  res 1
     extern translate_value_to_port_pins
     ;include ../../PicLibDK/display/led_segment.inc
     extern ds18b20_start
+    extern led_digit_init
 
 
 init 
@@ -63,7 +58,7 @@ init
     clear_memory 0xa0, 0xef - 0xa0
     clear_memory  0x120,  0x16f - 0x120
 
-    ;call led_digit_init
+    call led_digit_init
 
     BANKSEL tmr1_count_to_1sec
     movlw how_many_tmr1_count_1sec
@@ -81,6 +76,7 @@ init
 init2
     
 
+    PAGESEL ds18b20_start
     call ds18b20_start
     return
     END

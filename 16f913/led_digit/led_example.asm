@@ -46,6 +46,8 @@ ISR_exit
     retfie
 
     include ../../PicLibDK/math/math_function_div.asm
+
+    include ../../PicLibDK/display/led_defines.inc
     include ../../PicLibDK/display/led_segment.inc
 
 ISR_timer0
@@ -139,6 +141,19 @@ change_timer_seconds_2
 
     return
 
+refresh_led
+    m_refresh_led segment_digit1
+    return
+
+;this procedure will translate          
+;to number_l and number_h place value to be shown - max 2**16 value
+split_number_to_digits 
+        macro_16bits_into_N_dec number_l, segment_digit1 , LED_SEGMENT
+
+        return
+
+
+        
 main 
 
      clrwdt ; this comment to be able to test WDG detection

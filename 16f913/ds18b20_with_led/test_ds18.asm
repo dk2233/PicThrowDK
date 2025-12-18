@@ -69,9 +69,11 @@ ISR_timer2_next
 
     goto  ISR_exit
 
+    include ../../PicLibDK/sensors/ds1820_fraction_tab.inc
 
 
     include ../../PicLibDK/math/math_function_div.asm
+    include ../../PicLibDK/display/led_defines.inc
     include ../../PicLibDK/display/led_segment.inc
     include ../../PicLibDK/sensors/ds1820.inc
 
@@ -271,7 +273,16 @@ temperature_handle_error
 
     return
 
+refresh_led
+    m_refresh_led segment_digit1
+    return
 
+;this procedure will translate          
+;to number_l and number_h place value to be shown - max 2**16 value
+split_number_to_digits 
+        macro_16bits_into_N_dec number_l, segment_digit1 , LED_SEGMENT
+
+        return
 push 
     
     m_push_to_stack stack_of_differences, stack_sp, operandh

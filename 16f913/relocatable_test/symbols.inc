@@ -1,7 +1,7 @@
 
-;RA0 - 
-;RA1 - 
-;RA2 - 
+;RA0 - led green
+;RA1 - led red
+;RA2 - ds18b20 
 ;RA3 - 
 ;RA4 - 
 ;RA5 - 
@@ -98,3 +98,4 @@ max_value_to_be_displayed   equ  .9999
 port_ds18b20   equ     PORTA
 port_pin_ds18b20    equ    2
 tris_of_ds18b20_port   equ  TRISA
+#define minus_symbol   led_minus

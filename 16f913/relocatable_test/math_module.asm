@@ -20,7 +20,8 @@ number_h res 1
     global number_l, number_h
     global fraction_l, fraction_h
     global operandl, operandh
-    
+
+
     include ../../PicLibDK/memory_operation_16f.inc
     include ../../PicLibDK/math/math_macros.inc
 

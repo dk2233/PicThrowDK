@@ -9,25 +9,35 @@
     include ../../PicLibDK/macro_resets.inc
     include ../../PicLibDK/stacks/macro_stack_operation.inc
 
-    udata 
-fsr_temp  res 1
+common_var    udata  
 w_temp  res 1
-status_temp res 1 
-pclath_temp res 1
+status_temp res 1
+pclath_temp  res  1
+fsr_temp  res 1
+
+    udata
 tmr1_count_to_1sec res 1 
 program_states  res 1
 tmp7 res 1
 stack_sp res 1 
 stack_of_differences res .32
-value_for_one_digit_segment res 1
 
 
-    global value_for_one_digit_segment
+    global w_temp, status_temp, pclath_temp, fsr_temp
     global tmp7
     global stack_sp, stack_of_differences
-    global tmr1_count_to_1sec
-    global _start, _reset, ISR_procedure, main_loop, program_states
+    global _start, _reset, ISR_procedure, main_loop
+    global tmr1_count_to_1sec, program_states 
+    
+    extern value_for_one_digit_segment, led_state
+
+    
+    
     extern init 
+    extern ds18_temperature_handle
+    extern refresh_led
+
+
     include ../../PicLibDK/interrupts.inc
     
 reset_vector code  
@@ -46,6 +56,7 @@ ISR_procedure
     check_tmr2_isr ISR_timer2
 
 ISR_exit
+    nop
     context_restore16f
     retfie
     
@@ -88,5 +99,13 @@ _start
     call init 
 main_loop 
     nop
+    BANKSEL program_states
+    btfsc program_states, increment_1sec
+    call ds18_temperature_handle
+
+
+    ;BANKSEL led_state
+    ;btfsc led_state, process_led
+    call refresh_led
     goto main_loop
     END 
