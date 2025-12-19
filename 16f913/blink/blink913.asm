@@ -13,27 +13,39 @@
     include ../../PicLibDK/interrupts.inc
     include ../../PicLibDK/init16f.inc
     include ../../PicLibDK/memory_operation_16f.inc
+    include ../../PicLibDK/macro_time.inc
 
-    org  000h 
+    global status_bits, w_temp, status_temp, pclath_temp, fsr_temp
+
+    extern change_led, keys_on_int, keys_init, keys_machine_state
+
+
+blink_code    udata 
+
+status_bits res 1 
+
+common_var  udata 
+w_temp res 1
+status_temp res 1
+pclath_temp res 1
+fsr_temp  res 1
+
+reset_vector    code   
     PAGESEL init 
 
     goto init 
 
-    org 004h  
-interrupts 
+isr_vector code
     context_store16f 
 
-    BANKSEL INTCON
-
-    PAGESEL ISR_timer0
-    btfsc INTCON, T0IF 
-    goto ISR_timer0
+    nop
+    check_tmr0_isr ISR_timer0
 
     check_tmr1_isr  ISR_timer1
 
     check_tmr2_isr  ISR_timer2
 
-
+    check_rb0_int   keys_on_int
 
 
 ISR_exit 
@@ -42,8 +54,13 @@ ISR_exit
     retfie 
 
 ISR_timer0
-    bcf INTCON, T0IF
+    bcf INTCON, TMR0IF
 
+    ;about every 1 ms 
+
+    ;set marker that 1 ms pass
+    BANKSEL status_bits
+    bsf status_bits, tmr0_1ms_handle
 
     goto ISR_exit
 
@@ -53,7 +70,6 @@ ISR_timer1
     BANKSEL status_bits
     bsf   status_bits, tmr2_isr_reached
 
-
     goto ISR_exit
 
 ISR_timer2 
@@ -62,63 +78,22 @@ ISR_timer2
 
     goto ISR_exit
 
-change_led 
-    BANKSEL status_bits
-    bcf  status_bits, tmr2_isr_reached 
-    ;'0001'
-    ; 0010
-    ; 0100
-    ; 1000
-    ;10000 
 
-    BANKSEL led_port
-    movf  led_port,w 
-    BANKSEL status_bits
-    btfss  status_bits, change_led_direction
-    xorlw  last_led_pin
-
-    btfsc  status_bits, change_led_direction
-    xorlw  start_led_pin
-
-    SKPNZ
-    goto change_led_restart
-
-    bcf STATUS,C
-    btfss status_bits,change_led_direction
-    rlf  led_port,f 
-
-    btfsc status_bits,change_led_direction
-    rrf  led_port,f
-
-    return
-
-change_led_restart
-    ;movlw 1
-    ;movwf led_port
-    btfsc status_bits, change_led_direction
-    goto  change_led_restart_right
-
-    rrf led_port,f 
-    BANKSEL status_bits
-    bsf  status_bits, change_led_direction
-
-    return 
-
-change_led_restart_right 
-    BANKSEL status_bits
-    bcf  status_bits, change_led_direction
-    rlf  led_port,f 
-    return
+main_code code 
 
 main 
     clrwdt
     BANKSEL status_bits    
-    btfsc status_bits, tmr2_isr_reached
+    btfsc status_bits, move_led
     call change_led
+
+    BANKSEL status_bits    
+    btfsc status_bits, tmr0_1ms_handle
+    call keys_machine_state
 
     goto main
 
-    org 800h
+init_code code 
 
 init 
 
@@ -126,12 +101,11 @@ init
 
     config_porta_digit_16f
 
-    configure_ports_16f  PORTC , b'00000000' 
+    configure_ports_16f  PORTC , b'00000000'
 
-    ;BANKSEL OSCCON
-    ;movlw b'01110111'
-    ;movwf OSCCON
-    config_osccon  b'100', 0, 1 
+    configure_ports_16f  PORTB,  b'11111111' 
+
+    config_osccon  osccon_internal_2MHZ, osts_internal_clock_startup, scs_internal_clock 
 
     clear_memory  0x20, 0x5f 
     clear_memory  0xa0, (0xff - 0xa0)
@@ -140,10 +114,17 @@ init
     movwf INTCON
 
     config_tmr1_as_timer  b'01', 1
+    nop
+    configure_tmr0  b'0', 1 ;prescaler 2 every about 1ms will be tmr0 interruption
+
+    tmr0_interrupt_enable
 
     BANKSEL led_port
     movlw start_led_pin 
     movwf led_port
+
+    call keys_init
+
     PAGESEL main 
     goto main
     END
