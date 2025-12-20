@@ -39,7 +39,8 @@ led_port equ   PORTC
 last_led_pin	 equ  b'00010000'
 start_led_pin  equ 1
 
-button_debounce_value  equ  .50
+button_debounce_value  equ  .250
+how_many_tmr0_count_1sec    equ .1000
 
 ;status_bits bits 
 run_system equ 7

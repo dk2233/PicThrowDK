@@ -19,6 +19,8 @@
 
     extern change_led, keys_on_int, keys_init, keys_machine_state
 
+    extern blink_led_count_1sec
+
 
 blink_code    udata 
 
@@ -38,7 +40,6 @@ reset_vector    code
 isr_vector code
     context_store16f 
 
-    nop
     check_tmr0_isr ISR_timer0
 
     check_tmr1_isr  ISR_timer1
@@ -118,6 +119,8 @@ init
     configure_tmr0  b'0', 1 ;prescaler 2 every about 1ms will be tmr0 interruption
 
     tmr0_interrupt_enable
+
+    movel_2bytes how_many_tmr0_count_1sec, blink_led_count_1sec
 
     BANKSEL led_port
     movlw start_led_pin 

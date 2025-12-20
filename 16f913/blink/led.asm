@@ -5,11 +5,17 @@
 
     include defines.inc
 
-    
+    global led_port_temp, blink_led_count_1sec    
+
+
     global change_led
 
     extern status_bits
 
+
+led_ud udata
+led_port_temp res 1
+blink_led_count_1sec res 2
 
 led_code    code 
 change_led 
@@ -22,8 +28,11 @@ change_led
     ; 1000
     ;10000 
 
+
     BANKSEL led_port
     movf  led_port,w 
+    SKPNZ 
+    return 
     BANKSEL status_bits
     btfss  status_bits, change_led_direction
     xorlw  last_led_pin
@@ -38,17 +47,17 @@ change_led
     btfss status_bits,change_led_direction
     rlf  led_port,f 
 
+    bcf STATUS,C
     btfsc status_bits,change_led_direction
     rrf  led_port,f
 
     return
 
 change_led_restart
-    ;movlw 1
-    ;movwf led_port
     btfsc status_bits, change_led_direction
     goto  change_led_restart_right
 
+    bcf STATUS,C
     rrf led_port,f 
     BANKSEL status_bits
     bsf  status_bits, change_led_direction
@@ -58,6 +67,7 @@ change_led_restart
 change_led_restart_right 
     BANKSEL status_bits
     bcf  status_bits, change_led_direction
+    bcf STATUS,C
     rlf  led_port,f 
     return
 
