@@ -17,9 +17,16 @@
 
     global status_bits, w_temp, status_temp, pclath_temp, fsr_temp
 
+    extern blink_led_count_1sec
+
+    extern count_to_game_change_tmr1
+
+    extern check_games, game_init
+
     extern change_led, keys_on_int, keys_init, keys_machine_state
 
-    extern blink_led_count_1sec
+    extern task_1ms, task_tmr1
+
 
 
 blink_code    udata 
@@ -56,6 +63,8 @@ ISR_exit
 
 ISR_timer0
     bcf INTCON, TMR0IF
+    nop
+    bcf INTCON, TMR0IF
 
     ;about every 1 ms 
 
@@ -69,7 +78,7 @@ ISR_timer1
     BANKSEL PIR1
     bcf PIR1, TMR1IF 
     BANKSEL status_bits
-    bsf   status_bits, tmr2_isr_reached
+    bsf   status_bits, tmr1_isr_reached
 
     goto ISR_exit
 
@@ -84,13 +93,14 @@ main_code code
 
 main 
     clrwdt
-    BANKSEL status_bits    
-    btfsc status_bits, move_led
-    call change_led
 
     BANKSEL status_bits    
     btfsc status_bits, tmr0_1ms_handle
-    call keys_machine_state
+    call task_1ms
+
+    btfsc status_bits, tmr1_isr_reached
+    call task_tmr1 
+
 
     goto main
 
@@ -114,19 +124,24 @@ init
     movlw b'11000000'
     movwf INTCON
 
-    config_tmr1_as_timer  b'01', 1
+    config_tmr1_as_timer  b'00', 0 ; about 1 sec  
     nop
     configure_tmr0  b'0', 1 ;prescaler 2 every about 1ms will be tmr0 interruption
 
     tmr0_interrupt_enable
+    tmr1_interrupt_enable
 
     movel_2bytes how_many_tmr0_count_1sec, blink_led_count_1sec
+
+
 
     BANKSEL led_port
     movlw start_led_pin 
     movwf led_port
 
     call keys_init
+
+    call game_init
 
     PAGESEL main 
     goto main

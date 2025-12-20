@@ -4,11 +4,12 @@
 
 
     include defines.inc
+    include ../../PicLibDK/memory_operation_16f.inc
 
-    global led_port_temp, blink_led_count_1sec    
+    global led_port_temp, blink_led_count_1sec    , show_led
 
 
-    global change_led
+    global change_led, led_blink_led_control
 
     extern status_bits
 
@@ -53,6 +54,10 @@ change_led
 
     return
 
+show_led 
+    movf    INDF,w 
+    movwf led_port
+    return
 change_led_restart
     btfsc status_bits, change_led_direction
     goto  change_led_restart_right
@@ -71,4 +76,30 @@ change_led_restart_right
     rlf  led_port,f 
     return
 
+
+led_blink_led_control 
+    BANKSEL status_bits 
+    btfsc status_bits, game_change
+    goto  led_blink_rate_game_change 
+
+    movel_2bytes how_many_tmr0_count_1sec, blink_led_count_1sec
+    goto led_blink_led_control_1
+led_blink_rate_game_change
+    movel_2bytes how_many_tmr0_count_1sec/4, blink_led_count_1sec
+
+
+led_blink_led_control_1
+    movf led_port,w 
+    SKPNZ
+    goto  led_blink_light_again 
+    movwf led_port_temp
+    clrf led_port
+    return
+
+led_blink_light_again
+
+    movf led_port_temp,w
+    movwf led_port
+
+    return 
     end
