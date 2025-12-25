@@ -131,7 +131,9 @@ init
     tmr0_interrupt_enable
     tmr1_interrupt_enable
 
-    movel_2bytes how_many_tmr0_count_1sec, blink_led_count_1sec
+    movel_2bytes how_many_tmr1_count_1sec, blink_led_count_1sec
+    ;movlw how_many_tmr1_count_1sec
+    ;movwf blink_led_count_1sec
 
 
 

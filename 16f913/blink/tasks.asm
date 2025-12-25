@@ -28,11 +28,11 @@ task_1ms
     call button_process
 
 how_much_decrement equ 1
-    btfss game_status, game_blink_led
-    goto task_1ms_1
-    decrement_16bit_value   blink_led_count_1sec, how_much_decrement
-    SKPNZ
-    call led_blink_led_control
+    ;btfss game_status, game_blink_led
+    ;goto task_1ms_1
+    ;decrement_16bit_value   blink_led_count_1sec, how_much_decrement
+    ;SKPNZ
+    ;call led_blink_led_control
 
 
 task_1ms_1    
@@ -43,7 +43,7 @@ task_1ms_1
 
 task_tmr1
 
-    call game_keys_130ms_change_game
+    ;call game_keys_130ms_change_game
 
     ;check game possibilities
     call check_games
