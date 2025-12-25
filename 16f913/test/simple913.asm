@@ -149,7 +149,33 @@ text_abc
     addwf PCL,f 
     dt "abc",0
 
+test_compare_16bit  
 
+    movel_2bytes .3001 , result_ll
+    nop 
+    compare16bit_literal .3000, result_ll
+    movwf operandl
+    compare1byte  1, operandl, errors_comparision_16bit, 0 
+
+    movel_2bytes .3072 , result_ll
+    nop 
+    compare16bit_literal .3000, result_ll
+    movwf operandl
+    compare1byte  1, operandl, errors_comparision_16bit, 1
+
+    movel_2bytes .2999 , result_ll
+    nop 
+    compare16bit_literal .3000, result_ll
+    movwf operandl
+    compare1byte  compare_two_registers_returns_minus_1, operandl, errors_comparision_16bit, 2
+
+    movel_2bytes .3000 , result_ll
+    nop 
+    compare16bit_literal .3000, result_ll
+    movwf operandl
+    compare1byte  compare_return_equal, operandl, errors_comparision_16bit, 3
+
+    return
 
     org 800h
     
@@ -556,10 +582,13 @@ array_values6   equ   0x12340102
     mem_search_data_on_array  array1, operandh, operandl, result_001, 3, fraction_h, fraction_l, number_l, number_h, result_ll
     compare1byte 4, result_ll, errors_compare_arrays, 4
     
+    PAGESEL test_compare_16bit
+    call test_compare_16bit
+
     ;check for 4 errors if any is set
     compare4bytes 0,  errors_mul_8bit, status_bits, 0 
     NOP
-    compare1byte  0 , errors_compare_arrays, status_bits, 0 
+    compare2bytes  0 , errors_compare_arrays, status_bits, 0 
 
     PAGESEL led_off
     btfsc   led_green_port,led_green_pin

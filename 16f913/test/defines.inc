@@ -41,6 +41,7 @@
 	errors_sum_loop
 	errors_div
 	errors_compare_arrays
+	errors_comparision_16bit
 
 	status_bits 
 	array2:6

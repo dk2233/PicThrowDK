@@ -3,7 +3,7 @@ SRC=simple913.asm
 CC=gpasm
 
 test: simple913.asm
-	$(CC) -k -X $(SRC)
+	$(CC) -k -e ON $(SRC)
 
 clean:
-	rm $(SRC)
+	rm -f *.o *.lst *.map *.hex *.co*
