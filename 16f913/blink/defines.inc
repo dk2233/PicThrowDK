@@ -44,6 +44,7 @@ button_pin  equ 0
 
 button_debounce_value  equ  .50
 how_many_tmr0_count_1sec    equ .1000
+how_many_tmr1_count_1sec    equ .8
 how_many_tmr1_count_change_game equ .24
 
 ;status_bits bits 

@@ -11,7 +11,7 @@
 
     include macros.inc
 
-    extern status_bits
+    extern status_bits, key1_press_timeL
 
     global count_to_game_change_tmr1, game_number, game_status
 
@@ -40,6 +40,13 @@ first_game_bit  equ  1
 last_game_bit   equ  (1 << game_size)
 
 games_code code 
+
+game_3sec_change_game_check
+
+    compare16bit_literal .3000, key1_press_timeL
+
+    return
+
 
 game_keys_130ms_change_game
     ;check if key is still pressed
