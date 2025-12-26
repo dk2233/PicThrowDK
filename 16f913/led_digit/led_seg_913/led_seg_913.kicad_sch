@@ -3914,6 +3914,16 @@
 	)
 	(wire
 		(pts
+			(xy 232.41 179.07) (xy 232.41 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0dff12bf-b128-480e-a468-c322d5d4c239")
+	)
+	(wire
+		(pts
 			(xy 78.74 212.09) (xy 99.06 212.09)
 		)
 		(stroke
@@ -4954,7 +4964,7 @@
 	)
 	(wire
 		(pts
-			(xy 232.41 231.14) (xy 232.41 134.62)
+			(xy 232.41 231.14) (xy 232.41 186.69)
 		)
 		(stroke
 			(width 0)
@@ -6936,6 +6946,75 @@
 			(project ""
 				(path "/841da6f7-1698-4810-a4eb-50d82cc331bc"
 					(reference "#GND07")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 232.41 182.88 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8227b982-8bca-4ae7-84f2-4abe4a792d1d")
+		(property "Reference" "R17"
+			(at 234.95 181.6099 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "300"
+			(at 234.95 184.1499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 234.188 182.88 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 232.41 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 232.41 182.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "b55d9d70-2c86-4eaa-bf4c-0b44245d241c")
+		)
+		(pin "2"
+			(uuid "b375a53d-cf67-45e9-b2e4-05425bad0805")
+		)
+		(instances
+			(project "led_seg_913"
+				(path "/841da6f7-1698-4810-a4eb-50d82cc331bc"
+					(reference "R17")
 					(unit 1)
 				)
 			)
