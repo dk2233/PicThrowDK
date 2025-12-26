@@ -26,5 +26,7 @@ It depends on PicLibDK repository
     And is displayed
     ![Ds18b20 second connected sensor temperature](16f913/ds18b20_with_led/ds18b20_16f913_194.jpg)
 
+4. LED segments example in 16f84a - small, old pic16f - not very useful, but I like it very much (emotional connection)
+    ![Pic16f84a Led segments circuit ](16f84/led_example/led_segments.jpg)
 
 
