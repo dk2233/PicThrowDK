@@ -75,7 +75,13 @@ ISR_timer2_next
     include ../../PicLibDK/math/math_function_div.asm
     include ../../PicLibDK/display/led_defines.inc
     include ../../PicLibDK/display/led_segment.inc
-    include ../../PicLibDK/sensors/ds1820.inc
+    ;include ../../PicLibDK/sensors/ds1820.inc
+    include ../../PicLibDK/sensors/ds1820_main.inc
+    include ../../PicLibDK/sensors/ds1820_readpower.inc
+    include ../../PicLibDK/sensors/ds1820_resolution.inc
+    include ../../PicLibDK/sensors/ds1820_req_id_read.inc
+    include ../../PicLibDK/sensors/ds1820_searchROM.inc
+    include ../../PicLibDK/sensors/ds1820_scratchpad_write.inc
 
 
 

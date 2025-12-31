@@ -88,6 +88,7 @@
     ds18_id_bit
     ds18_id_which_byte
     ds18_id_RAM_offset
+    ds18_tmp
 
          endc
          

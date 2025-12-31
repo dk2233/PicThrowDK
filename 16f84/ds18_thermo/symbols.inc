@@ -28,8 +28,6 @@ disable_show     equ 6
 ;program_states
 
 tmr0_interrupt     equ 0
-sudo_menu       equ      7 
-                                ;oznaczane jezeli juz skopiowalem cyfry do temp
 
 
 how_many_tmr0_count_1sec  equ  .31
@@ -73,3 +71,4 @@ port_ds18b20   equ     PORTA
 port_pin_ds18b20    equ    4
 tris_of_ds18b20_port   equ  TRISA
 #define minus_symbol   led_minus
+#define DS18_CHECK_BUSY_AFTER_CONVERT_START

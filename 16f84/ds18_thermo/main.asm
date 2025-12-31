@@ -15,16 +15,13 @@ status_temp res 1
 pclath_temp  res  1
 fsr_temp  res 1
 
-;7
+;3
 main_udata    udata
 program_states  res 1
-tmp7 res 1
 tmr0_count_to_1sec  res 1
-value_incremented   res 2
 
 
     global w_temp, status_temp, pclath_temp, fsr_temp
-    global tmp7
     global _start, _reset, ISR_procedure, main_loop
     global program_states , tmr0_count_to_1sec
     
@@ -37,7 +34,7 @@ value_incremented   res 2
     
     
     extern init 
-    ;extern ds18_temperature_handle
+    extern ds18_temperature_handle
     extern refresh_led
     extern func_div_24bit_16bit
 
@@ -69,32 +66,11 @@ ISR_timer0
     goto ISR_exit
 
 
-how_much_increment_every_time  equ 1
-increment_value 
-    bcf program_states, tmr0_interrupt
-
-    decfsz tmr0_count_to_1sec,f 
-    goto ISR_exit
-
-    movlw how_many_tmr0_count_1sec
-    movwf tmr0_count_to_1sec
-
-
-    increment_16bit_value value_incremented, 1
-
-
-    
-    macro_16bits_into_N_dec   value_incremented, segment_digit, LED_SEGMENT
-
-
-    return
-
-
 _start 
     call init 
 main_loop 
     btfsc program_states, tmr0_interrupt
-    call increment_value
+    call ds18_temperature_handle
 
 
     call refresh_led

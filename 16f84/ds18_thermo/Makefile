@@ -2,17 +2,17 @@ CC=gpasm
 LINKER=gplink
 
 SCRIPT = 16f84a_linker.lkr
-OBJECTS = main.o init.o math_module.o led_module.o
-#ds1820_module.o
+OBJECTS = main.o init.o math_module.o led_module.o ds1820_module.o
 OUTPUT = 18b20_16f84a.hex
+INC = ../../PicLibDK
 
 all:		$(OUTPUT)
 
 $(OUTPUT):	$(OBJECTS) $(SCRIPT)
-	gplink   -r -O0 -m -S2 -s $(SCRIPT) -c $(OBJECTS) -o $(OUTPUT)
+	gplink   -r -O1 -m -p1 -S2 -s $(SCRIPT) -c $(OBJECTS) -o $(OUTPUT)
 
 %.o:		%.asm
-	$(CC) -p 16f84a -L -f -S0 -e ON -c $<
+	$(CC) -p 16f84a -L -f -S0 -e ON -I$(INC) -c $<
 
 clean:
 	rm -f *.o *.lst *.map *.hex *.d

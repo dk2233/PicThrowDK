@@ -15,7 +15,7 @@
 
     include symbols.inc
     include ../../PicLibDK/display/macro_value_to_digits.inc
-    ;extern ds18b20_start
+    extern ds18b20_start
     extern led_digit_init
     extern func_div_24bit_16bit
     extern translate_value_to_port_pins
@@ -45,7 +45,6 @@ init
 
     call led_digit_init
 
-    ;call ds18b20_start
+    call ds18b20_start
     return
     END
-    ;.eof
