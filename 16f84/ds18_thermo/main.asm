@@ -15,21 +15,20 @@ status_temp res 1
 pclath_temp  res  1
 fsr_temp  res 1
 
-;3
 main_udata    udata
-program_states  res 1
 tmr0_count_to_1sec  res 1
 
 
     global w_temp, status_temp, pclath_temp, fsr_temp
     global _start, _reset, ISR_procedure, main_loop
-    global program_states , tmr0_count_to_1sec
+    global  tmr0_count_to_1sec
     
     
     extern value_for_one_digit_segment, led_state
     extern result_ll, result_hl
     extern operandl, fraction_l
     extern segment_digit
+    extern ds18_configuration
 
     
     
@@ -60,7 +59,7 @@ ISR_timer0
 
 
     
-    bsf program_states, tmr0_interrupt
+    bsf ds18_configuration, tmr0_interrupt
 
 
     goto ISR_exit
@@ -69,7 +68,7 @@ ISR_timer0
 _start 
     call init 
 main_loop 
-    btfsc program_states, tmr0_interrupt
+    btfsc ds18_configuration, tmr0_interrupt
     call ds18_temperature_handle
 
 

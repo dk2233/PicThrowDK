@@ -11,14 +11,14 @@
 ;27 + 17 + 9 
 ds18_udata udata
 
-ds18_config_byte   res 1 
+;ds18_config_byte   res 1 
 ds18_configuration  res 1
 ds18_status  res 1
 ds18_command_to_be_send  res 1
 ds18_number_of_bytes  res 1
 ds18_id_bit  res  1
 ds18_id_which_byte  res 1
-;ds18_id_RAM_offset res 1
+ds18_id_RAM_offset res 1
 ds18_received_id_bit_count  res 1
 ds18_number_of_receive_bytes res 1 
 
@@ -32,22 +32,23 @@ ds18_which_sensor_id_measure_offset res 1
 ds18_which_sensor_count  res 1
 n_bit  res 1 
 ds18_tmp res 1
-;temperature_handle_choose_id res 1 
 
 
 ;this has to be located in one of continous sections
 ds18_ids udata
-ds18_read_from_RAM res 9
+;ds18_read_from_RAM res 9
 ds18_read_id_1 res 8
 ds18_read_id_2 res 8 
 ;ds18_read_id_3 res 8 
+stack_sp  res 1
+stack_of_differences   res 7
 
     extern result_001, result_01, result_ll, result_lh , result_hl, result_H 
     extern fraction_l, fraction_h 
+    extern ds18_read_from_RAM
     extern number_l, number_h
     extern operandl, operandh
     extern value_for_one_digit_segment, segment_digit
-    extern program_states
     extern led_dot_display
     extern tmr0_count_to_1sec
 
@@ -56,11 +57,11 @@ ds18_read_id_2 res 8
 
     
 ;global variables
-    global ds18_read_from_RAM
     global ds18_CRC_result
     global ds18_status
     global ds18_which_sensor_count
     global ds18_received_id_bit_count
+    global ds18_configuration
 
 
 
@@ -80,6 +81,7 @@ ds18_tab_code code
 ds18_code    CODE 
     include symbols.inc
     include ../../PicLibDK/sensors/ds1820_main.inc
+    include ../../PicLibDK/sensors/ds1820_searchROM.inc
     ;include ../../PicLibDK/sensors/ds1820.inc
 
 
@@ -90,23 +92,39 @@ ds18_code    CODE
 
 temperature_handle_ds18_conversion_led
 
-    ds18_convert_dec_measurement_into_4_digits_display  segment_digit, number_l
+    ds18_convert_dec_measurement_into_4_digits_display  segment_digit, fraction_l
     return 
 
 
 ds18b20_start
 
-    BANKSEL ds18_configuration
-    bcf  ds18_configuration, ds18_multiple_sensors
+    call ds18_search_rom_all_sensors
 
-    ;get scratchpad 
-    ;call  ds18_req_scratchpad_read 
+    bsf  ds18_configuration, ds18_multiple_sensors
 
     return
 
+ds18_temperature_handle_choose_id
+
+    BANKSEL ds18_which_sensor_id_measure_offset
+    movf    ds18_which_sensor_id_measure_offset,w 
+    BANKISEL ds18_read_id_1
+    movwf FSR 
+
+    movf  INDF,w 
+    SKPZ 
+    return
+
+    movlw LOW ds18_read_id_1
+    BANKSEL ds18_which_sensor_id_measure_offset
+    movwf ds18_which_sensor_id_measure_offset
+    movwf FSR 
+    movlw 1 
+    movwf ds18_which_sensor_count
+    return
+
 ds18_temperature_handle
-    BANKSEL program_states
-    bcf   program_states, tmr0_interrupt
+    bcf   ds18_configuration, tmr0_interrupt
 
     decfsz tmr0_count_to_1sec,f 
     return 
@@ -120,8 +138,14 @@ ds18_temperature_handle
 
     bcf ds18_status, ds18_wait_for_measurement
 ;read temperature from ds18
+    call ds18_temperature_handle_choose_id
     call  ds18_req_scratchpad_read
-    movwf result_ll
+    movwf ds18_tmp
+
+    movlw DS18B20_id_size
+    BANKSEL ds18_which_sensor_id_measure_offset
+    addwf ds18_which_sensor_id_measure_offset,f
+    incf ds18_which_sensor_count,f
 
     BANKSEL ds18_status
     btfss  ds18_status, ds18_crc_fault
@@ -132,7 +156,7 @@ ds18_temperature_handle
     btfsc  ds18_status, ds18_crc_fault
     bsf  led_dot_display,light_dot1  
     ;check result
-    movf  result_ll,w 
+    movf  ds18_tmp,w 
     xorlw 0 ; check returned value
     SKPZ ;if not 0 do not refresh temp
     return
@@ -148,7 +172,7 @@ ds18_temperature_handle
 
 
 temperature_handle_init_temperature_measurement
-    ;call ds18_temperature_handle_choose_id
+    call ds18_temperature_handle_choose_id
 
     call ds18_req_temp_convert
     bcf  led_dot_display, light_dot10
@@ -159,9 +183,10 @@ temperature_handle_init_temperature_measurement
     ;btfsc ds18_configuration, ds18_normal_power
     ;movlw 1
     ;btfsc ds18_configuration, ds18_parasite_power
+    ;movf  ds18_number_of_sensors,w
     movlw  led_null
     movwf  segment_digit+1
-    ;movf   ds18_which_sensor_count,w
+    movf   ds18_which_sensor_count,w
     movwf  segment_digit
     movlw  led_S
     movwf  segment_digit+2

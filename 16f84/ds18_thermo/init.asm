@@ -7,6 +7,7 @@
 
     include ../../PicLibDK/ports_macro.inc
     include ../../PicLibDK/macro_time_common.inc
+    include ../../PicLibDK/display/led_defines.inc
 
 
 
@@ -19,6 +20,7 @@
     extern led_digit_init
     extern func_div_24bit_16bit
     extern translate_value_to_port_pins
+    extern segment_digit
 
 
     extern tmr0_count_to_1sec
@@ -44,6 +46,14 @@ init
     movwf tmr0_count_to_1sec
 
     call led_digit_init
+
+    movlw  led_null
+    movwf  segment_digit
+    movwf  segment_digit+1
+
+    movwf  segment_digit+2
+
+    movwf  segment_digit+3
 
     call ds18b20_start
     return

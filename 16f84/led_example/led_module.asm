@@ -17,6 +17,7 @@ value_for_one_digit_segment res 1
 
     global refresh_led
     global led_digit_init
+    global translate_value_to_port_pins
 
 
     global value_for_one_digit_segment
@@ -26,14 +27,9 @@ value_for_one_digit_segment res 1
     global led_dot_display, led_state
 
     extern program_states
-    extern result_001, result_01, result_ll, result_lh , result_hl, result_H 
-    extern fraction_l, fraction_h 
-    extern number_l, number_h
-    extern operandl, operandh
 
 
 
-    global translate_value_to_port_pins
     extern func_div_24bit_16bit
 
 

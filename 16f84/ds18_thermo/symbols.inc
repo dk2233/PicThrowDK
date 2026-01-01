@@ -25,9 +25,9 @@ disable_show     equ 6
 
 
 
-;program_states
+;ds18_configuration
 
-tmr0_interrupt     equ 0
+tmr0_interrupt     equ 7
 
 
 how_many_tmr0_count_1sec  equ  .31
