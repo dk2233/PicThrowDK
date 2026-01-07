@@ -33,10 +33,10 @@
 
 
 
-led_port   equ  PORTB 
-last_led_pin	 equ  b'00010000'
+led_port   equ  PORTC 
+last_led_pin	 equ  b'00100000'
 
-led_port_mask   equ   b'00011111'
+led_port_mask   equ   b'00111111'
 start_led_pin  equ 1
 
 ;status_bits bits 
@@ -52,6 +52,8 @@ change_led_direction   equ 1
 
 how_many_tmr1_count_1sec  equ  .2
 
-max_value_led_method_2  equ  b'00100000'
+max_value_led_method_2  equ  b'01000000'
+
+mcu_freq  equ .4000000
 
 

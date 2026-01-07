@@ -1,0 +1,9 @@
+SRC=blink.asm
+
+CC=gpasm
+
+all: 
+	$(CC) -X -k -e ON $(SRC)
+
+clean:
+	rm -f *.o *.lst *.map *.hex *.co*

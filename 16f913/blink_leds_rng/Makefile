@@ -2,8 +2,8 @@ CC=gpasm
 LINKER=gplink
 
 SRC=blink.asm
-OBJECTS=blink.o  init.o  leds.o
-SCRIPT=16f628a_linker.lkr
+OBJECTS=blink.o  init.o  leds.o  analog_random.o
+SCRIPT=16f913_linker.lkr
 OUTPUT=blink.hex
 
 
