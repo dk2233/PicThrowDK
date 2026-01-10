@@ -48,10 +48,9 @@ keys_init
 button_process 
 
     button_handler  button_port, button_pin, key1_state, status_bits, key_pressed, key1_debounce_cnt, button_debounce_value, key1_press_timeL
-    ;btfss status_bits, key_pressed
     return
 
-
+;NOT USED
 ;on interrupt
 ;turn off port change
 ;enable tmr1 int to measure button being pressed
@@ -71,31 +70,6 @@ keys_on_int
 
     context_restore16f
      retfie
-
-;call every 1ms
-keys_machine_state
-    BANKSEL status_bits
-
-    decrement_16bit_value blink_led_count_1sec, 1
-    SKPZ
-    goto keys_machine_state_debounce_key1
-
-    call led_blink_led_control
-
-keys_machine_state_debounce_key1
-    btfss status_bits, key_pressed
-    goto keys_machine_state_end
-
-    decfsz button_debounce_counter,f 
-    goto keys_machine_state_end 
-
-    bcf  status_bits, key_pressed
-    rb0_int_enable
-    
-
-
-keys_machine_state_end
-     return 
 
 
         end 

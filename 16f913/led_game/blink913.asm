@@ -13,7 +13,8 @@
     include ../../PicLibDK/interrupts.inc
     include ../../PicLibDK/init16f.inc
     include ../../PicLibDK/memory_operation_16f.inc
-    include ../../PicLibDK/macro_time.inc
+    include ../../PicLibDK/macro_time_common.inc
+    include ../../PicLibDK/macro_time_tmr1_tmr2.inc
 
     global status_bits, w_temp, status_temp, pclath_temp, fsr_temp
 
