@@ -5,9 +5,10 @@
 	__CONFIG _WDT_OFF & _MCLRE_ON & _DEBUG_ON & _IESO_OFF  & _FOSC_INTOSCIO & _FCMEN_OFF & _PWRTE_ON & _BOREN_OFF
 	include	"p16f913.inc"
     include ../../PicLibDK/memory_operation_16f.inc
-    include ../../PicLibDK/interrupts.inc
-    include ../../PicLibDK/init16f.inc
-    include ../../PicLibDK/macro_time.inc
+    include ../../PicLibDK/interrupts_common.inc
+    include ../../PicLibDK/init16f_common.inc
+    include ../../PicLibDK/macro_time_common.inc
+    include ../../PicLibDK/macro_time_tmr1_tmr2.inc
 
 
 
@@ -48,7 +49,7 @@ init
     BANKSEL led_green_port
     bsf   led_green_port, led_green_pin
 ; OSCCON set for internal 4MHz	
-    config_osccon b'110', 0, 1
+    config_osccon osccon_internal_4MHZ, osts_internal_clock_startup, scs_internal_clock
 
 	movlw	b'11100000'
 	movwf	INTCON

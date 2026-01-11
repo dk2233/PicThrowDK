@@ -34,6 +34,7 @@ ds18_expected_resolution res 1
 ds18_which_sensor_id_measure_offset res 1
 ds18_which_sensor_count  res 1
 n_bit  res 1 
+ds18_tmp res 1
 ;temperature_handle_choose_id res 1 
 
 
@@ -233,14 +234,15 @@ temperature_handle_init_temperature_measurement
     btfsc  ds18_status, ds18_init_error
     goto   temperature_handle_error
 
-    btfsc ds18_configuration, ds18_normal_power
-    movlw 1
-    btfsc ds18_configuration, ds18_parasite_power
-    movlw 0
+    ;btfsc ds18_configuration, ds18_normal_power
+    ;movlw 1
+    ;btfsc ds18_configuration, ds18_parasite_power
+    ;movlw 0
     BANKSEL segment_digit
-    movwf  segment_digit
     BANKSEL ds18_which_sensor_count
     movf   ds18_which_sensor_count,w
+    movwf  segment_digit
+    movlw led_null
     movwf  segment_digit+1
     movlw  led_S
     movwf  segment_digit+2
