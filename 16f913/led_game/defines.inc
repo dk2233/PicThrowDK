@@ -49,7 +49,6 @@ how_many_tmr1_count_change_game equ .24
 
 ;status_bits bits 
 game_change   equ 5
-key_pressed    equ  4
 tmr0_1ms_handle  equ 3
 move_led    equ 2
 change_led_direction   equ 1
@@ -68,7 +67,12 @@ game_2  equ 4
 game_change_direction  equ 0
 game_blink_led  equ 1
 
-
-;key_state1
+;3 sec
+;key procedure call every 1 ms
+how_many_key_pressed_counts_to_menu  equ  .3000
+;key1_flags
 key1_pressed  equ   0
+key2_pressed  equ   0
+
 key1_used equ 1
+key2_used equ 1

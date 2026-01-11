@@ -12,14 +12,14 @@
     include ../../PicLibDK/math/math_macros.inc
     include ../../PicLibDK/macro_keys.inc
 
-
-    global keys_init, keys_on_int, button_process
+y
+    global button_process2
 
 
     extern w_temp, fsr_temp, pclath_temp, status_temp, status_bits
 
     extern blink_led_count_1sec, led_port_temp
-    global  key1_press_timeL, key1_flags
+    global  key2_press_timeL
 
     extern led_blink_led_control
 
@@ -29,39 +29,21 @@
 
 button_ud  udata
 button_debounce_counter  res 1
-key1_flags   res 1
-key1_state   res 1
-key1_debounce_cnt  res 1
-key1_press_timeL res 2
+key2_state   res 1
+key2_debounce_cnt  res 1
+key2_press_timeL res 2
 
 
 
 keys_code code 
 
 
-keys_init 
-
-        enable_pull_up 1
-        rb0_int_disable
-        return 
 
 
-button_process 
+button_process2 
 
-    button_handler  button_port, button_pin, key1_state, key1_flags, key1_pressed, key1_debounce_cnt, button_debounce_value, key1_press_timeL
+    button_handler  button_port, button_pin, key2_state, status_bits, key2_pressed, key2_debounce_cnt, button_debounce_value, key2_press_timeL
     return
-
-;NOT USED
-;on interrupt
-;turn off port change
-;enable tmr1 int to measure button being pressed
-keys_on_int 
-
-    bcf INTCON, INTF
-    BANKSEL status_bits
-
-    context_restore16f
-     retfie
 
 
         end 

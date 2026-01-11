@@ -24,7 +24,7 @@
 
     extern check_games, game_init
 
-    extern change_led, keys_on_int, keys_init, keys_machine_state
+    extern change_led, keys_on_int, keys_init
 
     extern task_1ms, task_tmr1
 
@@ -39,6 +39,8 @@ w_temp res 1
 status_temp res 1
 pclath_temp res 1
 fsr_temp  res 1
+
+
 
 reset_vector    code   
     PAGESEL init 

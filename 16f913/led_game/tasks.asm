@@ -10,9 +10,9 @@
 
     global task_1ms, task_tmr1
 
-    extern keys_machine_state, button_process, led_blink_led_control
+    extern button_process, led_blink_led_control
 
-    extern game_keys_130ms_change_game, check_games, change_led, game_change_proc
+    extern check_games, change_led, game_change_proc
 
     extern game_status
 

@@ -2,7 +2,7 @@ CC=gpasm
 LINKER=gplink
 
 SRC=blink913.asm
-OBJECTS=blink913.o led.o  buttons.o game.o tasks.o
+OBJECTS=blink913.o led.o  buttons.o game.o tasks.o buttons2.o stack_handle.o
 SCRIPT=16f913_linker.lkr
 OUTPUT=blink.hex
 

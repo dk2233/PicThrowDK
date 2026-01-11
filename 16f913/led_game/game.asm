@@ -8,17 +8,19 @@
 
     include ../../PicLibDK/macro_time.inc
     include ../../PicLibDK/memory_operation_16f.inc
+    include ../../PicLibDK/stacks/macro_stack_operation.inc
 
     include macros.inc
 
-    extern status_bits, key1_press_timeL
+    extern status_bits, key1_press_timeL, key1_flags
+
 
     global count_to_game_change_tmr1, game_number, game_status
 
-    global check_games, game_init, game_change_proc, game_keys_130ms_change_game
+    global check_games, game_init, game_change_proc
 
     extern show_led
-
+    extern stack_push_to, stack_pop
 
 ;to change game simply press longer - 2 sec key and then change blink diode
 ;game 1 - simple move of light led up and down
@@ -41,34 +43,33 @@ last_game_bit   equ  (1 << game_size)
 
 games_code code 
 
-game_3sec_change_game_check
-
-    compare16bit_literal .3000, key1_press_timeL
-
+;check how long key is still pressed
+;if condition to go into menu is fullfilled just go there
+game_keys_press_change_game
+    ;check if key is still pressed
+    ;BANKSEL key1_flags
+    btfss key1_flags, key1_pressed
     return
 
 
-game_keys_130ms_change_game
-    ;check if key is still pressed
-    BANKSEL count_to_game_change_tmr1 
-    movf count_to_game_change_tmr1,w ;if 0 do not decrease anymore
-    SKPZ 
-    goto game_keys_130ms_change_game_1
-    
+    compare16bit_literal  how_many_key_pressed_counts_to_menu, key1_press_timeL
+    ;what is in Wreg will be push into stack    
+    call stack_push_to
+    xorlw compare_return_equal
+    SKPNZ
+    goto game_keys_press_change_game_equal_or_greater
+
+    call stack_pop
+    xorlw compare_return_greater
+    SKPNZ
+    goto game_keys_press_change_game_equal_or_greater
+
+    ;less than going into menu - return 
+    return
+game_keys_press_change_game_equal_or_greater    
     ;check if pin is released
     btfsc button_port, button_pin ; both condition checked 
     goto  keys_130ms_change_game_button_released_set_game 
-    goto keys_130ms_change_game_end
-
-game_keys_130ms_change_game_1
-    BANKSEL button_port    
-    btfsc button_port, button_pin ;if released before 3 sec pass
-    goto  keys_130ms_change_game_button_released
-
-    decfsz count_to_game_change_tmr1,f ;and if 3 sec pass
-    goto keys_130ms_change_game_end 
-
-	btfss button_port, button_pin ;released after 3 sec pass - to reach here is almost impossible but still check this 
     goto keys_130ms_change_game_end
 
 keys_130ms_change_game_button_released_set_game
@@ -80,18 +81,19 @@ keys_130ms_change_game_button_released_set_game
     goto $+2
     bsf status_bits, game_change
 
+;clear key1 flag = no more usage now
+    bcf key1_flags, key1_pressed
 
-keys_130ms_change_game_button_released
-    ;tmr1_interrupt_disable
-    movlw how_many_tmr1_count_change_game
-    movwf count_to_game_change_tmr1
+
 
 keys_130ms_change_game_end    
     return 
 
 check_games 
-    btfsc status_bits, tmr1_isr_reached
-    call game_keys_130ms_change_game
+    ;check if key is still pressed 
+    btfsc  button_port, button_pin
+    ;key1_flags, key1_pressed
+    call   game_keys_press_change_game
 
     btfsc status_bits, game_change
     goto game_change_proc
@@ -119,7 +121,7 @@ check_games_end
 ;when reach last position it will return to start position
 game_change_proc
     blink_of_led_in_game 1
-    btfss status_bits, key_pressed
+    btfss key1_flags, key1_pressed
     goto game_change_proc_end  
     movlw LOW game_number
     movwf FSR 
@@ -156,7 +158,7 @@ check_games0_end
 check_games1
     BANKSEL status_bits
 
-    btfsc status_bits, key_pressed
+    btfsc key1_flags, key1_pressed
     bsf status_bits, move_led 
 
 check_games1_end
@@ -169,7 +171,7 @@ check_games1_end
 check_games2
     BANKSEL status_bits
 
-    btfsc status_bits, key_pressed
+    btfsc key1_flags, key1_pressed
     bsf status_bits, move_led 
 
 check_games2_end
