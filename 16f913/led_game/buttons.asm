@@ -19,7 +19,10 @@
     extern w_temp, fsr_temp, pclath_temp, status_temp, status_bits
 
     extern blink_led_count_1sec, led_port_temp
+
     global  key1_press_timeL, key1_flags
+
+    extern game_status
 
     extern led_blink_led_control
 
@@ -36,6 +39,7 @@ key1_press_timeL res 2
 
 
 
+
 keys_code code 
 
 
@@ -49,6 +53,19 @@ keys_init
 button_process 
 
     button_handler  button_port, button_pin, key1_state, key1_flags, key1_pressed, key1_debounce_cnt, button_debounce_value, key1_press_timeL
+    BANKSEL key1_flags
+    btfss key1_flags, key1_pressed
+    goto  $+4
+    bsf game_status, game_key_press
+    bsf game_status, game_key_press2
+    bcf key1_flags, key1_pressed
+
+    btfss key1_flags, key1_pressed_released
+    goto $+4 
+    bsf game_status, game_key_press_released
+    bsf game_status, game_key_press_released2
+    bcf key1_flags, key1_pressed_released
+
     return
 
 ;NOT USED

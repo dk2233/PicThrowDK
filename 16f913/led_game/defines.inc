@@ -66,6 +66,10 @@ game_2  equ 4
 ;game_status 
 game_change_direction  equ 0
 game_blink_led  equ 1
+game_key_press  equ 2
+game_key_press2 equ 3
+game_key_press_released  equ 4 
+game_key_press_released2  equ 5
 
 ;3 sec
 ;key procedure call every 1 ms
@@ -76,3 +80,5 @@ key2_pressed  equ   0
 
 key1_used equ 1
 key2_used equ 1
+
+key1_pressed_released   equ  2
