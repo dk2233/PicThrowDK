@@ -36,7 +36,8 @@
 
 
 led_port equ   PORTC
-last_led_pin	 equ  b'00010000'
+last_led_pin	 equ  b'00100000'
+led_port_mask  equ  b'00111111'
 start_led_pin  equ 1
 
 button_port equ PORTB 
@@ -82,3 +83,7 @@ key1_used equ 1
 key2_used equ 1
 
 key1_pressed_released   equ  2
+
+
+
+mcu_freq    equ   .4000000

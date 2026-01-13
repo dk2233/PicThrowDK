@@ -22,6 +22,8 @@
     extern show_led
     extern stack_push_to, stack_pop
 
+    extern rand_generate_pseudo
+
 ;to change game simply press longer - 2 sec key and then change blink diode
 ;game 1 - simple move of light led up and down
 ;game 2 - you need to move light led by one only when led lights
@@ -32,6 +34,7 @@ game_number  res 1
 game0_cnt_led_move  res 1
 game0_reg   res 1
 game1_reg   res 1
+game2_reg   res 1
 game_status res 1
 
 count_to_game_change_tmr1  res 1
@@ -41,16 +44,18 @@ game_size  equ 2
 first_game_bit  equ  1 
 last_game_bit   equ  (1 << game_size)
 
+
 games_code code 
 
 ;check how long key is still pressed
 ;if condition to go into menu is fullfilled just go there
 game_keys_press_change_game
     ;check if key is still pressed
-    ;BANKSEL key1_flags
-    btfss key1_flags, key1_pressed
+    BANKSEL game_status
+    btfss game_status, game_key_press_released2
     return
 
+    bcf game_status, game_key_press_released2
 
     compare16bit_literal  how_many_key_pressed_counts_to_menu, key1_press_timeL
     ;what is in Wreg will be push into stack    
@@ -68,9 +73,10 @@ game_keys_press_change_game
     return
 game_keys_press_change_game_equal_or_greater    
     ;check if pin is released
-    btfsc button_port, button_pin ; both condition checked 
-    goto  keys_130ms_change_game_button_released_set_game 
-    goto keys_130ms_change_game_end
+    ;BANKSEL button_port
+    ;btfsc button_port, button_pin ; both condition checked 
+    ;goto  keys_130ms_change_game_button_released_set_game 
+    ;goto keys_130ms_change_game_end
 
 keys_130ms_change_game_button_released_set_game
     BANKSEL status_bits
@@ -81,20 +87,16 @@ keys_130ms_change_game_button_released_set_game
     goto $+2
     bsf status_bits, game_change
 
-;clear key1 flag = no more usage now
-    bcf key1_flags, key1_pressed
-
-
-
 keys_130ms_change_game_end    
     return 
 
 check_games 
+    BANKSEL button_port
     ;check if key is still pressed 
     btfsc  button_port, button_pin
-    ;key1_flags, key1_pressed
     call   game_keys_press_change_game
 
+    BANKSEL status_bits
     btfsc status_bits, game_change
     goto game_change_proc
 
@@ -121,8 +123,10 @@ check_games_end
 ;when reach last position it will return to start position
 game_change_proc
     blink_of_led_in_game 1
-    btfss key1_flags, key1_pressed
+    BANKSEL game_status
+    btfss game_status, game_key_press_released
     goto game_change_proc_end  
+    bcf game_status, game_key_press_released
     movlw LOW game_number
     movwf FSR 
     BANKISEL game_number
@@ -137,7 +141,7 @@ game_change_proc_end
 check_games0
     blink_of_led_in_game 0
 
-
+    BANKSEL status_bits
     btfss status_bits, tmr1_isr_reached
     goto check_games0_end
 
@@ -156,25 +160,44 @@ check_games0_end
     return 
 
 check_games1
-    BANKSEL status_bits
-
-    btfsc key1_flags, key1_pressed
-    bsf status_bits, move_led 
+    BANKSEL game_status
+    btfss game_status, game_key_press
+    goto check_games1_end 
+    BANKISEL game1_reg    
+    move_bit_around_reg status_bits, change_led_direction,  start_led_pin, last_led_pin
+    bcf game_status, game_key_press
 
 check_games1_end
     movlw LOW game1_reg
     movwf FSR 
+    ;btfss status_bits, move_led
+    ;goto check_games1_end2
+
+
+    ;BANKISEL game1_reg    
+    ;move_bit_around_reg status_bits, change_led_direction,  start_led_pin, last_led_pin
+;check_games1_end2
     BANKISEL game1_reg    
     call show_led
     return
 
 check_games2
-    BANKSEL status_bits
+    BANKSEL game_status
+    blink_of_led_in_game 0
 
-    btfsc key1_flags, key1_pressed
-    bsf status_bits, move_led 
+    btfss game_status, game_key_press
+    goto check_games2_end
+    ;bsf status_bits, move_led 
+    call rand_generate_pseudo
+    BANKSEL game2_reg
+    movwf game2_reg
+    bcf game_status, game_key_press
 
 check_games2_end
+    movlw LOW game2_reg
+    movwf FSR 
+    BANKISEL game2_reg    
+    call show_led
     return
 
 

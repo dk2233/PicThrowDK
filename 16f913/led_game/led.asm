@@ -5,6 +5,7 @@
 
     include defines.inc
     include ../../PicLibDK/memory_operation_16f.inc
+    include ../../PicLibDK/math/macro_random.inc
 
     global led_port_temp, blink_led_count_1sec    , show_led
 
@@ -17,6 +18,8 @@
 led_ud udata
 led_port_temp res 1
 blink_led_count_1sec res 2
+random  res 1 
+
 
 led_code    code 
 change_led 
@@ -112,4 +115,6 @@ led_blink_light_again
     movwf led_port
 
     return 
+
+
     end

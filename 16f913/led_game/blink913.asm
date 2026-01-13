@@ -15,6 +15,7 @@
     include ../../PicLibDK/memory_operation_16f.inc
     include ../../PicLibDK/macro_time_common.inc
     include ../../PicLibDK/macro_time_tmr1_tmr2.inc
+    include ../../PicLibDK/macro16f_analog_d.inc
 
     global status_bits, w_temp, status_temp, pclath_temp, fsr_temp
 
@@ -27,6 +28,8 @@
     extern change_led, keys_on_int, keys_init
 
     extern task_1ms, task_tmr1
+
+    extern rng_init
 
 
 
@@ -119,6 +122,8 @@ init
 
     configure_ports_16f  PORTB,  b'11111111' 
 
+    configure_ports_16f  PORTA, b'11111111'
+
     config_osccon  osccon_internal_2MHZ, osts_internal_clock_startup, scs_internal_clock 
 
     clear_memory  0x20, 0x5f 
@@ -147,6 +152,9 @@ init
     call keys_init
 
     call game_init
+
+
+    call rng_init
 
     PAGESEL main 
     goto main
