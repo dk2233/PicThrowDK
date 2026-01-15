@@ -32,41 +32,11 @@
 ;RC0  
 
 
-	cblock 20h
 
-	status_bits
-
-
-
-	endc
-	;common variables for all banks
-	cblock	70h
-	w_temp
-	status_temp
-	pclath_temp
-	fsr_temp
-	result_001
-	result_01
-	result_ll
-	result_lh
-	result_hl
-	result_H
-	operandl
-	operandh
-	fraction_l
-	fraction_h
-	number_l
-	number_h
-	endc	
-
-	cblock 120h
-
-	endc
-
-
-
-led_port   equ  PORTC 
+led_port   equ  PORTB 
 last_led_pin	 equ  b'00010000'
+
+led_port_mask   equ   b'00011111'
 start_led_pin  equ 1
 
 ;status_bits bits 
@@ -76,5 +46,12 @@ wdg_detected2 equ 5
 
 
 ;status_bits 
-tmr2_isr_reached  equ 0 
+tmr1_isr_reached  equ 0 
 change_led_direction   equ 1
+
+
+how_many_tmr1_count_1sec  equ  .2
+
+max_value_led_method_2  equ  b'00100000'
+
+

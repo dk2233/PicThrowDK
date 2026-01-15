@@ -13,47 +13,28 @@
     include ../../PicLibDK/interrupts.inc
     include ../../PicLibDK/init16f.inc
     include ../../PicLibDK/memory_operation_16f.inc
-    include ../../PicLibDK/macro_time.inc
+    include ../../PicLibDK/macro_time_tmr1_tmr2.inc
 
-    global status_bits, w_temp, status_temp, pclath_temp, fsr_temp
-
-    extern blink_led_count_1sec
-
-    extern count_to_game_change_tmr1
-
-    extern check_games, game_init
-
-    extern change_led, keys_on_int, keys_init, keys_machine_state
-
-    extern task_1ms, task_tmr1
-
-
-
-blink_code    udata 
-
-status_bits res 1 
-
-common_var  udata 
-w_temp res 1
-status_temp res 1
-pclath_temp res 1
-fsr_temp  res 1
-
-reset_vector    code   
+    org  000h 
     PAGESEL init 
 
     goto init 
 
-isr_vector code
+    org 004h  
+interrupts 
     context_store16f 
 
-    check_tmr0_isr ISR_timer0
+    BANKSEL INTCON
+
+    PAGESEL ISR_timer0
+    btfsc INTCON, T0IF 
+    goto ISR_timer0
 
     check_tmr1_isr  ISR_timer1
 
     check_tmr2_isr  ISR_timer2
 
-    check_rb0_int   keys_on_int
+
 
 
 ISR_exit 
@@ -62,15 +43,8 @@ ISR_exit
     retfie 
 
 ISR_timer0
-    bcf INTCON, TMR0IF
-    nop
-    bcf INTCON, TMR0IF
+    bcf INTCON, T0IF
 
-    ;about every 1 ms 
-
-    ;set marker that 1 ms pass
-    BANKSEL status_bits
-    bsf status_bits, tmr0_1ms_handle
 
     goto ISR_exit
 
@@ -78,7 +52,8 @@ ISR_timer1
     BANKSEL PIR1
     bcf PIR1, TMR1IF 
     BANKSEL status_bits
-    bsf   status_bits, tmr1_isr_reached
+    bsf   status_bits, tmr2_isr_reached
+
 
     goto ISR_exit
 
@@ -88,23 +63,63 @@ ISR_timer2
 
     goto ISR_exit
 
+change_led 
+    BANKSEL status_bits
+    bcf  status_bits, tmr2_isr_reached 
+    ;'0001'
+    ; 0010
+    ; 0100
+    ; 1000
+    ;10000 
 
-main_code code 
+    BANKSEL led_port
+    movf  led_port,w 
+    BANKSEL status_bits
+    btfss  status_bits, change_led_direction
+    xorlw  last_led_pin
+
+    btfsc  status_bits, change_led_direction
+    xorlw  start_led_pin
+
+    SKPNZ
+    goto change_led_restart
+
+    bcf STATUS,C
+    btfss status_bits,change_led_direction
+    rlf  led_port,f 
+
+    btfsc status_bits,change_led_direction
+    rrf  led_port,f
+
+    return
+
+change_led_restart
+    ;movlw 1
+    ;movwf led_port
+    btfsc status_bits, change_led_direction
+    goto  change_led_restart_right
+
+    rrf led_port,f 
+    BANKSEL status_bits
+    bsf  status_bits, change_led_direction
+
+    return 
+
+change_led_restart_right 
+    BANKSEL status_bits
+    bcf  status_bits, change_led_direction
+    rlf  led_port,f 
+    return
 
 main 
     clrwdt
-
     BANKSEL status_bits    
-    btfsc status_bits, tmr0_1ms_handle
-    call task_1ms
-
-    btfsc status_bits, tmr1_isr_reached
-    call task_tmr1 
-
+    btfsc status_bits, tmr2_isr_reached
+    call change_led
 
     goto main
 
-init_code code 
+    org 800h
 
 init 
 
@@ -112,11 +127,12 @@ init
 
     config_porta_digit_16f
 
-    configure_ports_16f  PORTC , b'00000000'
+    configure_ports_16f  PORTC , b'00000000' 
 
-    configure_ports_16f  PORTB,  b'11111111' 
-
-    config_osccon  osccon_internal_2MHZ, osts_internal_clock_startup, scs_internal_clock 
+    ;BANKSEL OSCCON
+    ;movlw b'01110111'
+    ;movwf OSCCON
+    config_osccon  b'100', 0, 1 
 
     clear_memory  0x20, 0x5f 
     clear_memory  0xa0, (0xff - 0xa0)
@@ -124,25 +140,11 @@ init
     movlw b'11000000'
     movwf INTCON
 
-    config_tmr1_as_timer  b'00', 0 ; about 1 sec  
-    nop
-    configure_tmr0  b'0', 1 ;prescaler 2 every about 1ms will be tmr0 interruption
-
-    tmr0_interrupt_enable
-    tmr1_interrupt_enable
-
-    movel_2bytes how_many_tmr0_count_1sec, blink_led_count_1sec
-
-
+    config_tmr1_as_timer  b'01', 1
 
     BANKSEL led_port
     movlw start_led_pin 
     movwf led_port
-
-    call keys_init
-
-    call game_init
-
     PAGESEL main 
     goto main
     END

@@ -5,18 +5,21 @@
 
     include defines.inc
     include ../../PicLibDK/memory_operation_16f.inc
+    include ../../PicLibDK/math/macro_random.inc
 
     global led_port_temp, blink_led_count_1sec    , show_led
 
 
     global change_led, led_blink_led_control
 
-    extern status_bits
+    extern status_bits, game_status
 
 
 led_ud udata
 led_port_temp res 1
 blink_led_count_1sec res 2
+random  res 1 
+
 
 led_code    code 
 change_led 
@@ -55,8 +58,18 @@ change_led
     return
 
 show_led 
+    btfsc game_status, game_blink_led
+    goto show_led_blink
     movf    INDF,w 
     movwf led_port
+    return
+show_led_blink
+    decfsz blink_led_count_1sec,f
+    goto  show_led_blink_end
+
+    call led_blink_led_control
+
+show_led_blink_end
     return
 change_led_restart
     btfsc status_bits, change_led_direction
@@ -82,24 +95,26 @@ led_blink_led_control
     btfsc status_bits, game_change
     goto  led_blink_rate_game_change 
 
-    movel_2bytes how_many_tmr0_count_1sec, blink_led_count_1sec
+    movel_2bytes how_many_tmr1_count_1sec, blink_led_count_1sec
+
     goto led_blink_led_control_1
 led_blink_rate_game_change
-    movel_2bytes how_many_tmr0_count_1sec/4, blink_led_count_1sec
+    movel_2bytes how_many_tmr1_count_1sec/2, blink_led_count_1sec
 
 
 led_blink_led_control_1
     movf led_port,w 
     SKPNZ
     goto  led_blink_light_again 
-    movwf led_port_temp
     clrf led_port
     return
 
 led_blink_light_again
 
-    movf led_port_temp,w
+    movf INDF,w
     movwf led_port
 
     return 
+
+
     end

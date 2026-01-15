@@ -13,12 +13,16 @@
     include ../../PicLibDK/macro_keys.inc
 
 
-    global keys_init, keys_on_int, keys_machine_state, button_process
+    global keys_init, keys_on_int, button_process
 
 
     extern w_temp, fsr_temp, pclath_temp, status_temp, status_bits
 
     extern blink_led_count_1sec, led_port_temp
+
+    global  key1_press_timeL, key1_flags
+
+    extern game_status
 
     extern led_blink_led_control
 
@@ -28,8 +32,11 @@
 
 button_ud  udata
 button_debounce_counter  res 1
+key1_flags   res 1
 key1_state   res 1
 key1_debounce_cnt  res 1
+key1_press_timeL res 2
+
 
 
 
@@ -45,10 +52,23 @@ keys_init
 
 button_process 
 
-    button_handler  button_port, button_pin, key1_state, status_bits, key_pressed, key1_debounce_cnt, button_debounce_value
-    btfss status_bits, key_pressed
+    button_handler  button_port, button_pin, key1_state, key1_flags, key1_pressed, key1_debounce_cnt, button_debounce_value, key1_press_timeL
+    BANKSEL key1_flags
+    btfss key1_flags, key1_pressed
+    goto  $+4
+    bsf game_status, game_key_press
+    bsf game_status, game_key_press2
+    bcf key1_flags, key1_pressed
+
+    btfss key1_flags, key1_pressed_released
+    goto $+4 
+    bsf game_status, game_key_press_released
+    bsf game_status, game_key_press_released2
+    bcf key1_flags, key1_pressed_released
+
     return
 
+;NOT USED
 ;on interrupt
 ;turn off port change
 ;enable tmr1 int to measure button being pressed
@@ -57,42 +77,8 @@ keys_on_int
     bcf INTCON, INTF
     BANKSEL status_bits
 
-    movlw button_debounce_value ;how many int we have to pass
-    movwf button_debounce_counter
-
-    rb0_int_disable
-    bsf status_bits, key_pressed
-
-    tmr1_interrupt_enable
-
-
     context_restore16f
      retfie
-
-;call every 1ms
-keys_machine_state
-    BANKSEL status_bits
-
-    decrement_16bit_value blink_led_count_1sec, 1
-    SKPZ
-    goto keys_machine_state_debounce_key1
-
-    call led_blink_led_control
-
-keys_machine_state_debounce_key1
-    btfss status_bits, key_pressed
-    goto keys_machine_state_end
-
-    decfsz button_debounce_counter,f 
-    goto keys_machine_state_end 
-
-    bcf  status_bits, key_pressed
-    rb0_int_enable
-    
-
-
-keys_machine_state_end
-     return 
 
 
         end 
