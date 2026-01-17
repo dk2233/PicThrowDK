@@ -64,3 +64,4 @@ dkms.conf
 *.err
 *.O
 *.zip
+*.lck

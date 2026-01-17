@@ -8,7 +8,7 @@
     include ../../PicLibDK/interrupts.inc
     include ../../PicLibDK/math/math_macros.inc
     include ../../PicLibDK/init16f.inc
-    include ../../PicLibDK/macro_time.inc
+    include ../../PicLibDK/macro_time_common.inc
     include ../../PicLibDK/display/lcd_driver_pic16f.inc
     include ../../PicLibDK/macro_resets.inc
     include ../../PicLibDK/stacks/macro_stack_operation.inc

@@ -29,4 +29,8 @@ It depends on PicLibDK repository
 4. LED segments example in 16f84a - small, old pic16f - not very useful, but I like it very much (emotional connection)
     ![Pic16f84a Led segments circuit ](16f84/led_example/led_segments.jpg)
 
+5. LCD alphanumeric type - based on  Hitachi HD44780 or similar like KS0066. 
+    ![Pic16f913 lcd display usage](16f913/lcd_hd4478_test_8bit_4bit/lcd_p16f913.jpg)
+    Example of using CGRAM characters write.
+    ![Lcd example to create custom characters](16f913/lcd_hd4478_test_8bit_4bit/lcd_custom_char.jpg)
 

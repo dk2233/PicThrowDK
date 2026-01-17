@@ -1,5 +1,8 @@
-    ;list p=16f913
-	include	"p16f913.inc"
+    list p=16f913
+    include "p16f913.inc"
+
+
+    include symbols.inc
 
     include ../../PicLibDK/memory_operation_16f.inc
     include ../../PicLibDK/math/math_macros.inc
@@ -55,10 +58,10 @@ ds18_read_id_8 res 8
     extern number_l, number_h
     extern operandl, operandh
     extern tmp7
-    extern value_for_one_digit_segment, segment_digit
     extern program_states
-    extern led_dot_display
+    ;extern led_dot_display
     extern func_div_24bit_16bit
+    extern segment_digit
 
     
 ;global variables
@@ -87,8 +90,12 @@ ds18_tab_code code
     include ../../PicLibDK/sensors/ds1820_fraction_tab.inc
 
 ds18_code    CODE 
-    include symbols.inc
-    include ../../PicLibDK/sensors/ds1820.inc
+    include ../../PicLibDK/sensors/ds1820_main.inc
+    include ../../PicLibDK/sensors/ds1820_searchROM.inc
+    include ../../PicLibDK/sensors/ds1820_req_id_read.inc
+    include ../../PicLibDK/sensors/ds1820_readpower.inc
+    include ../../PicLibDK/sensors/ds1820_resolution.inc
+    include ../../PicLibDK/sensors/ds1820_scratchpad_write.inc
 
 
 
@@ -201,12 +208,12 @@ temperature_handle_led2
 
     BANKSEL ds18_status
     btfss  ds18_status, ds18_crc_fault
-    bcf  led_dot_display,light_dot1  
+    ;bcf  led_dot_display,light_dot1  
 
     ;show dot as crc fault
 
     btfsc  ds18_status, ds18_crc_fault
-    bsf  led_dot_display,light_dot1  
+    ;bsf  led_dot_display,light_dot1  
     ;check result
     movf  result_ll,w 
     xorlw 0 ; check returned value
@@ -217,8 +224,8 @@ temperature_handle_led2
 
     PAGESEL temperature_handle_ds18_conversion_led
     call temperature_handle_ds18_conversion_led
-    BANKSEL led_dot_display
-    bsf led_dot_display, light_dot10
+    ;BANKSEL led_dot_display
+    ;bsf led_dot_display, light_dot10
     return
 
 
@@ -227,8 +234,8 @@ temperature_handle_init_temperature_measurement
     call ds18_temperature_handle_choose_id
 
     call ds18_req_temp_convert
-    BANKSEL led_dot_display
-    bcf  led_dot_display, light_dot10
+    ;BANKSEL led_dot_display
+    ;bcf  led_dot_display, light_dot10
     
     BANKSEL ds18_status
     btfsc  ds18_status, ds18_init_error

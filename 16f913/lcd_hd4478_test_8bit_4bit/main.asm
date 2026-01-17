@@ -8,6 +8,10 @@
     include ../../PicLibDK/display/macro_value_to_digits.inc
     include ../../PicLibDK/macro_resets.inc
     include ../../PicLibDK/stacks/macro_stack_operation.inc
+    include ../../PicLibDK/display/macro_lcd_hd4478.inc
+
+    include ../../PicLibDK/display/lcd_defines.inc
+
 
 common_var    udata  
 w_temp  res 1
@@ -29,13 +33,12 @@ stack_of_differences res .32
     global _start, _reset, ISR_procedure, main_loop
     global tmr1_count_to_1sec, program_states 
     
-    extern value_for_one_digit_segment, led_state
-
     
     
     extern init 
-    extern ds18_temperature_handle
-    extern refresh_led
+    extern lcd_handler_check_busy, lcd_handler_send_data, lcd_handler_write_data
+    extern lcd_handler_set_address_ddram
+    extern  task_tmr1
 
 
     include ../../PicLibDK/interrupts.inc
@@ -60,7 +63,6 @@ ISR_exit
     context_restore16f
     retfie
     
-_start code
 ISR_timer0
     bcf  INTCON,T0IF
     ;BANKSEL led_state
@@ -73,17 +75,17 @@ ISR_timer1
     BANKSEL PIR1
     bcf  PIR1, TMR1IF
 
-    BANKSEL  tmr1_count_to_1sec
-    decfsz tmr1_count_to_1sec,f
-    goto   ISR_timer2_next
+    ;BANKSEL  tmr1_count_to_1sec
+    ;decfsz tmr1_count_to_1sec,f
+    ;goto   ISR_timer2_next
 
     ;increment timer value 
     BANKSEL program_states
-    bsf   program_states,increment_1sec
+    bsf   program_states,interrupt_tmr1
 
-    BANKSEL  tmr1_count_to_1sec
-    movlw   how_many_tmr1_count_1sec 
-    movwf   tmr1_count_to_1sec
+    ;BANKSEL  tmr1_count_to_1sec
+    ;movlw   how_many_tmr1_count_1sec 
+    ;movwf   tmr1_count_to_1sec
     goto  ISR_exit
 
 ISR_timer2
@@ -94,18 +96,30 @@ ISR_timer2_next
 
     goto  ISR_exit
 
+_start code
 _start 
     PAGESEL init
     call init 
+    ;PAGESEL lcd_handler_check_busy
+    ;call lcd_handler_check_busy
+    ;movlw 0
+    ;call lcd_handler_set_address_ddram
+    ;movlw "a"
+    ;call lcd_handler_write_data
+    ;movlw "b"
+    ;call lcd_handler_write_data
+    ;movlw 0x40
+    ;call lcd_handler_set_address_ddram
+    ;movlw "b"
+    ;call lcd_handler_write_data
+
 main_loop 
-    nop
     BANKSEL program_states
-    btfsc program_states, increment_1sec
-    call ds18_temperature_handle
+    btfsc program_states, interrupt_tmr1
+    call task_tmr1
 
 
     ;BANKSEL led_state
     ;btfsc led_state, process_led
-    call refresh_led
     goto main_loop
     END 

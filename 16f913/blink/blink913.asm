@@ -14,6 +14,7 @@
     include ../../PicLibDK/init16f.inc
     include ../../PicLibDK/memory_operation_16f.inc
     include ../../PicLibDK/macro_time_tmr1_tmr2.inc
+    include ../../PicLibDK/macro16f_osccon.inc
 
     org  000h 
     PAGESEL init 

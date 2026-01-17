@@ -23,10 +23,9 @@
     include ../../PicLibDK/math/math_macros.inc
     extern func_div_24bit_16bit
     include ../../PicLibDK/display/macro_value_to_digits.inc
-    extern translate_value_to_port_pins
-    ;include ../../PicLibDK/display/led_segment.inc
+    ; extern translate_value_to_port_pins
     extern ds18b20_start
-    extern led_digit_init
+    extern lcd_handler_init
 
 
 init 
@@ -43,8 +42,8 @@ init
     configure_tmr2  2, b'1111', .244 ; 4/4e6 * 16 * 16 * 244 * 16
 
     configure_ports_16f  PORTA, b'11111100'
-    configure_ports_16f  PORTB, b'11000000'
-    configure_ports_16f  PORTC, b'00110000'
+    configure_ports_16f  PORTB, b'11111000'
+    configure_ports_16f  PORTC, b'00000000'
 
     ;signal reset 
     BANKSEL led_green_port
@@ -60,8 +59,6 @@ init
     clear_memory 0xa0, 0xef - 0xa0
     clear_memory  0x120,  0x16f - 0x120
 
-    call led_digit_init
-
     BANKSEL tmr1_count_to_1sec
     movlw how_many_tmr1_count_1sec
     movwf tmr1_count_to_1sec
@@ -76,10 +73,11 @@ init
     bsf   led_red_port, led_red_pin
 
 init2
-    
+    PAGESEL lcd_handler_init 
+    call lcd_handler_init
 
-    PAGESEL ds18b20_start
-    call ds18b20_start
+    ;PAGESEL ds18b20_start
+    ;call ds18b20_start
     return
     END
     ;.eof

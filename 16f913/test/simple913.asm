@@ -17,7 +17,8 @@
     include ../../PicLibDK/interrupts.inc
     include ../../PicLibDK/math/math_macros.inc
     include ../../PicLibDK/init16f.inc
-    include ../../PicLibDK/macro_time.inc
+    include ../../PicLibDK/macro_time_common.inc
+    include ../../PicLibDK/display/lcd_defines.inc
 
     
     org   000h
@@ -44,6 +45,7 @@ ISR_exit
     include ../../PicLibDK/math/math_function_multiplication.asm
     include ../../PicLibDK/math/multiplication_16f_loop.asm
     include ../../PicLibDK/math/math_function_div.asm
+    include ../../PicLibDK/display/macro_lcd_hd4478.inc
 
 ISR_timer0
     bcf INTCON,T0IF

@@ -56,8 +56,6 @@ ISR_timer2_next
     goto  ISR_exit
 
     include ../../PicLibDK/math/math_function_div.asm
-
-    include ../../PicLibDK/display/led_defines.inc
     include ../../PicLibDK/display/led_segment.inc
 
 translate_value_to_port_pins 
@@ -115,18 +113,6 @@ change_timer_seconds_dot_off
 
     return
 
-;this procedure will translate          
-;to number_l and number_h place value to be shown - max 2**16 value
-split_number_to_digits 
-        macro_16bits_into_N_dec number_l, segment_digit1 , LED_SEGMENT
-
-        return
-
-
-refresh_led     
-
-    m_refresh_led  segment_digit1
-    return 
 init 
     config_ccp_off
     config_comparator_off
@@ -163,7 +149,7 @@ main
     btfsc program_states, increment_1sec 
     call change_timer_seconds 
 
-    btfsc led_state, process_led
+    ;btfsc led_state, process_led
     call refresh_led
 
 
