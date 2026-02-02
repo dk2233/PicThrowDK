@@ -8,6 +8,7 @@
     include ../../PicLibDK/interrupts.inc
     include ../../PicLibDK/display/led_defines.inc
     include ../../PicLibDK/display/macro_value_to_digits.inc
+    include symbols.inc
 
 ds18_udata udata
 
@@ -87,8 +88,12 @@ ds18_tab_code code
     include ../../PicLibDK/sensors/ds1820_fraction_tab.inc
 
 ds18_code    CODE 
-    include symbols.inc
-    include ../../PicLibDK/sensors/ds1820.inc
+    include ../../PicLibDK/sensors/ds1820_main.inc
+    include ../../PicLibDK/sensors/ds1820_searchROM.inc
+    include ../../PicLibDK/sensors/ds1820_req_id_read.inc
+    include ../../PicLibDK/sensors/ds1820_readpower.inc
+    include ../../PicLibDK/sensors/ds1820_resolution.inc
+    include ../../PicLibDK/sensors/ds1820_scratchpad_write.inc
 
 
 
@@ -111,6 +116,7 @@ ds18b20_start
 
     movlw LOW ds18_read_id_1
     movwf FSR 
+    movwf ds18_which_sensor_id_measure_offset
     BANKISEL ds18_read_id_1
     ;get power type 0xb4
     call  ds18_read_power_supply

@@ -31,7 +31,7 @@ ds18_measured_temp    res 1
 ds18_which_sensor_id_measure_offset res 1
 ds18_which_sensor_count  res 1
 n_bit  res 1 
-ds18_tmp res 1
+ds18_tmp res 2
 
 
 ;this has to be located in one of continous sections

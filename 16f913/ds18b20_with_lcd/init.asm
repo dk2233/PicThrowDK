@@ -10,10 +10,11 @@
     include ../../PicLibDK/macro_time_common.inc
     include ../../PicLibDK/macro_time_tmr1_tmr2.inc
     include ../../PicLibDK/macro16f_osccon.inc
+    include ../../PicLibDK/macro16f_ports.inc
 
 
 
-    code
+init_code    code
     extern operandl, operandh, tmr1_count_to_1sec
     global init
 
@@ -26,6 +27,8 @@
     ; extern translate_value_to_port_pins
     extern ds18b20_start
     extern lcd_handler_init
+    extern lcd_cyclic_init
+    extern keys_init
 
 
 init 
@@ -63,21 +66,27 @@ init
     movlw how_many_tmr1_count_1sec
     movwf tmr1_count_to_1sec
 
-    detect_watchdog_happens 
-    xorlw   wdg_reset_reason
-    btfss   STATUS,Z 
+    ;detect_watchdog_happens 
+    ;xorlw   wdg_reset_reason
+    ;btfss   STATUS,Z 
 
-    goto init2 
 
     BANKSEL led_red_port
     bsf   led_red_port, led_red_pin
+    ;goto init2 
 
 init2
+    PAGESEL keys_init 
+    call keys_init
+
     PAGESEL lcd_handler_init 
     call lcd_handler_init
 
-    ;PAGESEL ds18b20_start
-    ;call ds18b20_start
+    call lcd_cyclic_init
+    PAGESEL ds18b20_start
+    call ds18b20_start
+    BANKSEL led_red_port
+    bcf   led_red_port, led_red_pin
     return
     END
     ;.eof

@@ -2,7 +2,7 @@ CC=gpasm
 LINKER=gplink
 
 SCRIPT = 16f913_linker.lkr
-OBJECTS = main.o ds1820_module.o init.o math_module.o lcd_handler.o
+OBJECTS = main.o ds1820_module.o init.o math_module.o lcd_handler.o  tasks.o buttons.o light_handle.o
 OUTPUT = lcd_ds18.hex
 
 all:		$(OUTPUT)

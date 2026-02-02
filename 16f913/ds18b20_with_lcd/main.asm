@@ -39,6 +39,7 @@ stack_of_differences res .32
     extern ds18_temperature_handle
     extern lcd_handler_check_busy, lcd_handler_send_data, lcd_handler_write_data
     extern lcd_handler_set_address_ddram
+    extern  task_tmr1_1sec, task_tmr0_2ms
 
 
     include ../../PicLibDK/interrupts.inc
@@ -63,11 +64,10 @@ ISR_exit
     context_restore16f
     retfie
     
-_start code
 ISR_timer0
     bcf  INTCON,T0IF
-    ;BANKSEL led_state
-    ;bsf led_state, process_led
+    BANKSEL program_states
+    bsf program_states, interrupt_tmr0
 
     goto ISR_exit
 
@@ -97,30 +97,28 @@ ISR_timer2_next
 
     goto  ISR_exit
 
+_start code
 _start 
     PAGESEL init
     call init 
     PAGESEL lcd_handler_check_busy
     call lcd_handler_check_busy
-    movlw 0
+    ;movlw "a"
+    ;call lcd_handler_write_data
+    ;movlw "b"
+    ;call lcd_handler_write_data
+    movlw lcd_address_first_line
     call lcd_handler_set_address_ddram
-    movlw "a"
-    call lcd_handler_write_data
-    movlw "b"
-    call lcd_handler_write_data
-    movlw 0x40
-    call lcd_handler_set_address_ddram
-    movlw "b"
-    call lcd_handler_write_data
 
 main_loop 
     nop
     BANKSEL program_states
     btfsc program_states, increment_1sec
-    ;call ds18_temperature_handle
+    call task_tmr1_1sec
 
+    BANKSEL program_states
+    btfsc program_states, interrupt_tmr0
+    call task_tmr0_2ms
 
-    ;BANKSEL led_state
-    ;btfsc led_state, process_led
     goto main_loop
     END 

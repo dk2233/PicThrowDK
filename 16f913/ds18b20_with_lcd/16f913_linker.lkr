@@ -35,7 +35,15 @@ SECTION    NAME=ds18_ids     RAM=gpr1
 SECTION    NAME=led_udata    RAM=gpr0 
 SECTION    NAME=ds18_udata   RAM=gpr0
 SECTION    NAME=ds18_tab_code     ROM=page1a
+SECTION    NAME=light_code ROM=page0
+SECTION    NAME=init_code  ROM=page0
+SECTION    NAME=lcd_code  ROM=page0
+SECTION    NAME=tasks_code  ROM=page0
+SECTION    NAME=keys_code  ROM=page0
+
 SECTION    NAME=ds18_code     ROM=page0
+
+SECTION    NAME=_start  ROM=page0
 SECTION    NAME=PROG1      ROM=page0           // ROM code space - page0
 SECTION    NAME=PROG2      ROM=page1b           // ROM code space - page1
 SECTION    NAME=IDLOCS     ROM=.idlocs         // ID locations

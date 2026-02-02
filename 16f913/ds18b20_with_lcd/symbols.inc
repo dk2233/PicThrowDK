@@ -12,8 +12,8 @@
 ;RB7 - ICD
 ;RB6 - ICD
 ;RB5 -  
-;RB4 -  
-;RB3 - 
+;RB4 - 
+;RB3 - button 1
 ;RB2 - lcd E
 ;RB1 - lcd RW
 ;RB0 - lcd RS
@@ -38,11 +38,9 @@ disable_show     equ 6
 
 ;program_states
 
-increment_1sec     equ 0
-przerwanie_t1     equ      2
-przerwanie_t0     equ      3
-sudo_menu       equ      7 
-                                ;oznaczane jezeli juz skopiowalem cyfry do temp
+interrupt_tmr0     equ 0
+increment_1sec     equ 1
+buttton_pressed    equ 2
 
 
 
@@ -76,10 +74,12 @@ led_red_pin	 equ 1
 #define lcd_RW_pin      1
 #define lcd_RS_pin      0
 #define lcd_TRIS_data   TRISC
+#define lcd_location_4_bit_in_H   1
 
 #define func_name_send_data   lcd_handler_send_data
 #define func_check_busy       lcd_handler_check_busy
-
+#define lcd_one_line_size    .16
+#define lcd_number_of_ds_meas_one_line    .2
 
 ;configuration of ds18b20
 
@@ -87,3 +87,15 @@ port_ds18b20   equ     PORTA
 port_pin_ds18b20    equ    2
 tris_of_ds18b20_port   equ  TRISA
 #define minus_symbol   led_minus
+
+
+
+button_port equ PORTB 
+button_pin  equ 3
+#define button_debounce_value  .50
+
+;key1_flags
+key1_pressed  equ   0
+key1_pressed_released   equ  1
+
+

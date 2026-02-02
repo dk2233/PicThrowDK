@@ -5,7 +5,7 @@
     include ../../PicLibDK/interrupts_common.inc
     include ../../PicLibDK/interrupts_rb0.inc
 
-    include ../../PicLibDK/ports_macro.inc
+    include ../../PicLibDK/macro16f_ports.inc
     include ../../PicLibDK/macro_time_common.inc
     include ../../PicLibDK/display/led_defines.inc
 

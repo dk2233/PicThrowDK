@@ -5,9 +5,10 @@
     include ../../PicLibDK/memory_operation_16f.inc
     include ../../PicLibDK/interrupts_common.inc
     include ../../PicLibDK/init16f_common.inc
-    include ../../PicLibDK/macro16f_osccon.inc
     include ../../PicLibDK/macro_time_common.inc
     include ../../PicLibDK/macro_time_tmr1_tmr2.inc
+    include ../../PicLibDK/macro16f_osccon.inc
+    include ../../PicLibDK/macro16f_ports.inc
 
 
 
@@ -70,7 +71,6 @@ init
     bsf   led_red_port, led_red_pin
 
 init2
-    BANKSEL led_red_port
     bsf   led_red_port, led_red_pin
     PAGESEL lcd_handler_init 
     call lcd_handler_init

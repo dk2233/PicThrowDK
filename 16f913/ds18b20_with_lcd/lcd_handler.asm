@@ -12,23 +12,26 @@
 
 
     global lcd_handler_init, lcd_handler_send_data, lcd_handler_check_busy, lcd_handler_write_data
+    global lcd_handler_home
     global lcd_handler_set_address_ddram
 lcd_ud   udata
 segment_digit  res 4
 lcd_temp        res 2
+lcd_n    res 1
 
 lcd_code    code 
 
 
 
 lcd_handler_init 
-    m_lcd_init   lcd_set_8_bit, lcd_set_2_lines, lcd_set_5_8_fonts, lcd_disp_inc, lcd_disp_noshift, lcd_display_cursor_on, lcd_display_blink_off, lcd_RW_operates, lcd_temp
+    m_lcd_init   lcd_set_4_bit, lcd_set_2_lines, lcd_set_5_8_fonts, lcd_disp_inc, lcd_disp_noshift, lcd_display_cursor_off, lcd_display_blink_on, lcd_RW_operates, lcd_temp
     return
 
 
 ;in Wreg place value to send to lcd driver
 lcd_handler_send_data
     m_lcd_send_data lcd_temp
+    PAGESEL lcd_handler_check_busy
     call lcd_handler_check_busy
     return
 
@@ -38,6 +41,7 @@ lcd_handler_check_busy
 
 lcd_handler_write_data 
     m_write_lcd  lcd_temp
+    PAGESEL lcd_handler_check_busy
     call lcd_handler_check_busy
 
     return 
@@ -47,8 +51,12 @@ lcd_handler_set_address_ddram
     m_lcd_set_address_ddram
     return 
 
-;place into Wref address of lcd cgram
-lcd_handler_set_address_cgram 
+lcd_handler_home 
+    m_return_home
+    return
+
+lcd_handler_set_address_cgram
     m_lcd_set_address_cgram
     return 
+
     end

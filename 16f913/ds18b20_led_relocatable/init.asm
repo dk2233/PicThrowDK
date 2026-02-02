@@ -10,6 +10,7 @@
     include ../../PicLibDK/macro_time_common.inc
     include ../../PicLibDK/macro_time_tmr1_tmr2.inc
     include ../../PicLibDK/macro16f_osccon.inc
+    include ../../PicLibDK/macro16f_ports.inc
 
 
 
