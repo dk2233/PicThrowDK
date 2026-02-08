@@ -52,6 +52,7 @@ isr_vector code
 ISR_procedure     
 
     context_store16f 
+    PAGESEL ISR_timer0
 
     check_tmr0_isr ISR_timer0
 
@@ -102,19 +103,15 @@ _start
     PAGESEL init
     call init 
     PAGESEL lcd_handler_check_busy
-    call lcd_handler_check_busy
-    ;movlw "a"
-    ;call lcd_handler_write_data
-    ;movlw "b"
-    ;call lcd_handler_write_data
     movlw lcd_address_first_line
     call lcd_handler_set_address_ddram
 
 main_loop 
-    nop
     BANKSEL program_states
     btfsc program_states, increment_1sec
     call task_tmr1_1sec
+
+    PAGESEL task_tmr0_2ms
 
     BANKSEL program_states
     btfsc program_states, interrupt_tmr0
