@@ -1,0 +1,1 @@
+#define  mcu_freq    .4000000
