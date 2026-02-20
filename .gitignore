@@ -65,3 +65,7 @@ dkms.conf
 *.O
 *.zip
 *.lck
+/16f913/mplab_x_test/simple_test.X/build/
+/16f913/mplab_x_test/simple_test.X/dist/
+/16f913/xc8_lcd_hitachi/LCD_Hitachi_test.X/build/
+/16f913/xc8_lcd_hitachi/LCD_Hitachi_test.X/dist/
