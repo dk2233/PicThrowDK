@@ -1,3 +1,6 @@
 [submodule "PicLibDK"]
 	path = PicLibDK
 	url = git@github.com:dk2233/PicLibDK.git
+[submodule "lcd_hd4478_driver"]
+	path = lcd_hd4478_driver
+	url = git@github.com:dk2233/lcd_hd4478_driver.git

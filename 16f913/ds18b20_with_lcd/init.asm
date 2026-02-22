@@ -2,7 +2,7 @@
     ;.file "init.asm"
 
     list p=16f913
-	__CONFIG _WDT_OFF & _MCLRE_ON & _DEBUG_ON & _IESO_OFF  & _FOSC_INTOSCIO & _FCMEN_OFF & _PWRTE_ON & _BOREN_OFF
+	__CONFIG _WDT_OFF & _MCLRE_ON & _DEBUG_OFF & _IESO_OFF  & _FOSC_INTOSCIO & _FCMEN_OFF & _PWRTE_ON & _BOREN_OFF
 	include	"p16f913.inc"
     include ../../PicLibDK/memory_operation_16f.inc
     include ../../PicLibDK/interrupts_common.inc

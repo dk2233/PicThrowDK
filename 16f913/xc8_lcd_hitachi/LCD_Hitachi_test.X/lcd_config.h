@@ -9,12 +9,13 @@
 #define	NEWFILE_H
 
 #include <xc.h>
+#include "ecu_config.h"
 
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
-#define _XTAL_FREQ  8e6
+
 
 #define LCD_HD4478_4BIT
 #define LCD_POSITION_4_BIT_HIGH
@@ -36,7 +37,8 @@ extern "C" {
     
 #define LCD_HD4478_RW_USAGE
 #define DELAY_MS(x)      __delay_ms(x)
-
+#define NOP_FUNC       NOP()
+    
 #ifdef	__cplusplus
 }
 #endif

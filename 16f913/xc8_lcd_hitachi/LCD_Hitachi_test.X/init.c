@@ -2,7 +2,7 @@
 
 #define OSTS_INIT_OSC_START_WITH_EXTERNAL_CLOCK    0      
 
-#define SCS_SYSTEM_CLOCK_EXTERNAL    0
+#define SCS_SYSTEM_CLOCK_INTERNAL    1
 
 
 #define LCD_OFF()    do{ \
@@ -18,12 +18,21 @@ void pic16f_init(void)
     oscillator set 
     */
 	OSCCONbits.IRCF =  7; // 8MHZ
-	OSCCONbits.SCS = SCS_SYSTEM_CLOCK_EXTERNAL;
+	OSCCONbits.SCS = SCS_SYSTEM_CLOCK_INTERNAL;
 	OSCCONbits.OSTS = OSTS_INIT_OSC_START_WITH_EXTERNAL_CLOCK;
-
+    
+    INTCONbits.GIE = 1;
+    INTCONbits.PEIE = 1;
+    INTCONbits.T0IE = 1;
+    
     //TMR0
+    OPTION_REG = 0;
 	OPTION_REGbits.PS = 7;
 	OPTION_REGbits.PSA = 0;
+    
+    OPTION_REGbits.nRBPU = 0;
+    
+    WPUBbits.WPUB3 = 1;
 
     //T1CON
 	T1CONbits.T1CKPS = 0;
@@ -40,10 +49,14 @@ void pic16f_init(void)
 
     //ports
 
-    TRISA = 0;
+    TRISA = 0b11111110;
     PORTA = 0;
+    PORTB = 0;
+    PORTC = 0;
 
-    TRISB = 1;
+    TRISB = 0b11111111;
+
+
 
 
 }

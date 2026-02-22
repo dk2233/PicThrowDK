@@ -9,8 +9,8 @@
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>
-                <sourceRootElem>../../xc8_example_led</sourceRootElem>
-                <sourceRootElem>Lcdhd4478_Driver</sourceRootElem>
+                <sourceRootElem>../../../lcd_hd4478_driver</sourceRootElem>
+                <sourceRootElem>.</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
