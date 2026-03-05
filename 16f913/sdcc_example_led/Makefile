@@ -7,7 +7,7 @@ DEBUG=--debug-xtra
 ASM=gpasm 
 LINKER=gplink
 OUTPUT=sdcc_test.hex
-OBJECTS=example1.o  delay.o int_handler.o
+OBJECTS=example1.o  delay.o int_handler.o math_op.o
 SCRIPT = 16f913_linker.lkr
 
 all: $(OUTPUT)

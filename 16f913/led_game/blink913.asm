@@ -16,6 +16,7 @@
     include ../../PicLibDK/macro_time_common.inc
     include ../../PicLibDK/macro_time_tmr1_tmr2.inc
     include ../../PicLibDK/macro16f_analog_d.inc
+    include ../../PicLibDK/macro16f_osccon.inc
 
     global status_bits, w_temp, status_temp, pclath_temp, fsr_temp
 

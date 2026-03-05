@@ -5,12 +5,13 @@
 
 
     include defines.inc
-    include ../../PicLibDK/init16f.inc
+    include ../../PicLibDK/init16f_common.inc
     include ../../PicLibDK/interrupts.inc
     include ../../PicLibDK/macro_time_common.inc
     include ../../PicLibDK/memory_operation_16f.inc
     include ../../PicLibDK/math/math_macros.inc
     include ../../PicLibDK/macro_keys.inc
+    include ../../PicLibDK/macro16f_ports.inc
 
 
     global keys_init, keys_on_int, button_process

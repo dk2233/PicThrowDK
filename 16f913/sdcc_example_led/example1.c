@@ -3,14 +3,14 @@
 #include <pic14/pic16regs.h>
 #include <pic14/pic16fam.h>
 #include <stdint.h>
-
+#include "math_op.h"
 extern void delay_proc_500ms(uint16_t t);
 
 static uint32_t simple_add(uint16_t x1, uint16_t x2);
 
 #define NO_LEGACY_NAMES
 
-#define mcu_frequency   4000000
+#define mcu_frequency   8000000
 static __code uint16_t __at (_CONFIG) configword1 = _WDT_OFF & _MCLRE_ON & _DEBUG_ON & _IESO_OFF  & _FOSC_INTOSCIO & _FCMEN_OFF & _PWRTE_ON & _BOREN_OFF;
 
 typedef struct {
@@ -168,6 +168,9 @@ void main(void)
 		porta2_p->Ports_u8 = 1;
 	}
 
+	math_div_return_t div_result;
+
+	(void) div(&div_result, 10000, 23);
 	uint8_t temp;
 
 	INTCONbits.GIE = 1;
