@@ -1,0 +1,32 @@
+SDCC_ROOT = /src
+CC        = $(SDCC_ROOT)/bin/sdcc
+
+FAMILY    = pic14
+PROC      = 16f913
+SRC       = main.c
+OUTPUT    = test
+
+# Ustawiamy środowisko wewnątrz Makefile
+export SDCC_HOME = /src
+
+CFLAGS    = -m$(FAMILY) -p$(PROC) \
+            --use-non-free --opt-code-size \
+            --no-pcode-opt --fverbose-asm -V
+CFLAGS += -L/src/device/lib/build/pic14 -L/src/device/non-free/lib/build/pic14
+
+LDFLAGS   = -Wl-m
+
+all: $(OUTPUT).hex
+
+$(OUTPUT).hex: $(SRC)
+	# Czyścimy, żeby nie było konfliktów ze starymi obiektami
+	rm -f *.o *.asm *.lst *.cod *.hex
+	# Kompilujemy bez -o, SDCC stworzy main.hex
+	$(CC) $(CFLAGS) $(LDFLAGS) $(SRC)
+	# Zmieniamy nazwę wyniku na pożądaną
+	mv $(SRC:.c=.hex) $(OUTPUT).hex
+
+clean:
+	rm -f *.asm *.cod *.hex *.lst *.map *.o *.sym *.p
+
+.PHONY: all clean

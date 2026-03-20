@@ -1,0 +1,309 @@
+;--------------------------------------------------------
+; File Created by SDCC : free open source ANSI-C Compiler
+; Version 3.2.0 #8008 (Mar 20 2026) (Linux)
+; This file was generated Fri Mar 20 12:10:06 2026
+;--------------------------------------------------------
+; PIC port for the 14-bit core
+;--------------------------------------------------------
+;	.file	"main.c"
+	list	p=16f913
+	radix dec
+	include "p16f913.inc"
+;--------------------------------------------------------
+; external declarations
+;--------------------------------------------------------
+	extern	___sdcc_saved_fsr
+	extern	__sdcc_gsinit_startup
+;--------------------------------------------------------
+; global declarations
+;--------------------------------------------------------
+	global	_yadd
+	global	_isr_func
+	global	_main
+	global	_achar0
+	global	_achar1
+	global	_failures
+
+	global PSAVE
+	global SSAVE
+	global WSAVE
+	global STK12
+	global STK11
+	global STK10
+	global STK09
+	global STK08
+	global STK07
+	global STK06
+	global STK05
+	global STK04
+	global STK03
+	global STK02
+	global STK01
+	global STK00
+
+sharebank udata_ovr 0x0070
+PSAVE	res 1
+SSAVE	res 1
+WSAVE	res 1
+STK12	res 1
+STK11	res 1
+STK10	res 1
+STK09	res 1
+STK08	res 1
+STK07	res 1
+STK06	res 1
+STK05	res 1
+STK04	res 1
+STK03	res 1
+STK02	res 1
+STK01	res 1
+STK00	res 1
+
+;--------------------------------------------------------
+; global definitions
+;--------------------------------------------------------
+;--------------------------------------------------------
+; absolute symbol definitions
+;--------------------------------------------------------
+;--------------------------------------------------------
+; compiler-defined variables
+;--------------------------------------------------------
+UDL_main_0	udata
+r0x1005	res	1
+r0x1004	res	1
+r0x1006	res	1
+;--------------------------------------------------------
+; initialized data
+;--------------------------------------------------------
+
+ID_main_0	idata
+_achar0
+	db	0x00
+
+
+ID_main_1	idata
+_achar1
+	db	0x00
+
+
+ID_main_2	idata
+_failures
+	db	0x00
+
+;--------------------------------------------------------
+; overlayable items in internal ram 
+;--------------------------------------------------------
+;	udata_ovr
+;--------------------------------------------------------
+; reset vector 
+;--------------------------------------------------------
+STARTUP	code 0x0000
+	nop
+	pagesel __sdcc_gsinit_startup
+	goto	__sdcc_gsinit_startup
+;--------------------------------------------------------
+; interrupt and initialization code
+;--------------------------------------------------------
+c_interrupt	code	0x4
+__sdcc_interrupt
+;***
+;  pBlock Stats: dbName = I
+;***
+;entry:  _isr_func	;Function start
+; 0 exit points
+;; Starting pCode block
+_isr_func	;Function start
+; 0 exit points
+;	.line	40; "main.c"	void isr_func(void) __interrupt(0)
+	MOVWF	WSAVE
+	SWAPF	STATUS,W
+	CLRF	STATUS
+	MOVWF	SSAVE
+	MOVF	PCLATH,W
+	CLRF	PCLATH
+	MOVWF	PSAVE
+	MOVF	FSR,W
+;;     peep 2 - Removed redundant move
+;	.line	43; "main.c"	}
+	BANKSEL	___sdcc_saved_fsr
+	MOVWF	___sdcc_saved_fsr
+	BANKSEL	FSR
+	MOVWF	FSR
+	MOVF	PSAVE,W
+	MOVWF	PCLATH
+	CLRF	STATUS
+	SWAPF	SSAVE,W
+	MOVWF	STATUS
+	SWAPF	WSAVE,F
+	SWAPF	WSAVE,W
+END_OF_INTERRUPT
+	RETFIE	
+
+;--------------------------------------------------------
+; code
+;--------------------------------------------------------
+code_main	code
+;***
+;  pBlock Stats: dbName = M
+;***
+;entry:  _main	;Function start
+; 2 exit points
+;has an exit
+;functions called:
+;   _yadd
+;   _zadd_lit2uchar
+;   _zadd_lit2uchar
+;   _zadd_lit2uchar
+;   _yadd
+;   _zadd_lit2uchar
+;   _zadd_lit2uchar
+;   _zadd_lit2uchar
+;3 compiler assigned registers:
+;   STK02
+;   STK01
+;   STK00
+;; Starting pCode block
+_main	;Function start
+; 2 exit points
+;	.line	57; "main.c"	a = yadd(a, a);    
+	MOVLW	0x01
+	MOVWF	STK02
+	MOVLW	0x00
+	MOVWF	STK01
+	MOVLW	0x01
+	MOVWF	STK00
+	MOVLW	0x00
+	CALL	_yadd
+;	.line	58; "main.c"	zadd_lit2uchar();
+	CALL	_zadd_lit2uchar
+;	.line	59; "main.c"	zadd_lit2uchar();
+	CALL	_zadd_lit2uchar
+;	.line	60; "main.c"	zadd_lit2uchar();
+	CALL	_zadd_lit2uchar
+_00144_DS_
+;	.line	62; "main.c"	while(1);
+	GOTO	_00144_DS_
+	RETURN	
+; exit point of _main
+
+;***
+;  pBlock Stats: dbName = C
+;***
+;entry:  _yadd	;Function start
+; 2 exit points
+;has an exit
+;7 compiler assigned registers:
+;   r0x1004
+;   STK00
+;   r0x1005
+;   STK01
+;   r0x1006
+;   STK02
+;   r0x1007
+;; Starting pCode block
+_yadd	;Function start
+; 2 exit points
+;	.line	45; "main.c"	int yadd(int a, int b)
+	BANKSEL	r0x1004
+	MOVWF	r0x1004
+	MOVF	STK00,W
+	MOVWF	r0x1005
+	MOVF	STK01,W
+	MOVWF	r0x1006
+	MOVF	STK02,W
+;;     peep 2 - Removed redundant move
+;;1	MOVWF	r0x1007
+;	.line	47; "main.c"	return a+ b;
+	ADDWF	r0x1005,F
+	MOVF	r0x1006,W
+	BTFSC	STATUS,0
+	INCFSZ	r0x1006,W
+	ADDWF	r0x1004,F
+	MOVF	r0x1005,W
+	MOVWF	STK00
+	MOVF	r0x1004,W
+	RETURN	
+; exit point of _yadd
+
+;***
+;  pBlock Stats: dbName = C
+;***
+;entry:  _zadd_lit2uchar	;Function start
+; 2 exit points
+;has an exit
+;; Starting pCode block
+_zadd_lit2uchar	;Function start
+; 2 exit points
+;	.line	13; "main.c"	achar0 = achar0 + 5;
+	MOVLW	0x05
+	BANKSEL	_achar0
+	ADDWF	_achar0,F
+;	.line	15; "main.c"	if(achar0 != 5)
+	MOVF	_achar0,W
+;;     peep 1 - test/jump to test/skip
+;;     peep 1b - test/jump to test/skip
+;	.line	16; "main.c"	failures++;
+	XORLW	0x05
+;	.line	18; "main.c"	achar0 += 10;
+	BTFSC	STATUS,2
+	GOTO	_00001_DS_
+	BANKSEL	_failures
+	INCF	_failures,F
+_00001_DS_
+	MOVLW	0x0a
+	BANKSEL	_achar0
+	ADDWF	_achar0,F
+;	.line	20; "main.c"	if(achar0 != 15)
+	MOVF	_achar0,W
+;;     peep 1 - test/jump to test/skip
+;;     peep 1b - test/jump to test/skip
+;	.line	21; "main.c"	failures++;
+	XORLW	0x0f
+;	.line	23; "main.c"	achar0 = achar0 +1;  // Should be an increment
+	BTFSC	STATUS,2
+	GOTO	_00002_DS_
+	BANKSEL	_failures
+	INCF	_failures,F
+_00002_DS_
+	BANKSEL	_achar0
+	INCF	_achar0,F
+;	.line	24; "main.c"	if(achar0 != 16)
+	MOVF	_achar0,W
+;;     peep 1 - test/jump to test/skip
+;;     peep 1b - test/jump to test/skip
+;	.line	25; "main.c"	failures++;
+	XORLW	0x10
+;	.line	27; "main.c"	for(achar1 = 0; achar1 < 100; achar1++)
+	BTFSC	STATUS,2
+	GOTO	_00003_DS_
+	BANKSEL	_failures
+	INCF	_failures,F
+_00003_DS_
+	MOVLW	0x64
+	BANKSEL	_achar1
+	MOVWF	_achar1
+_00115_DS_
+;	.line	28; "main.c"	achar0 += 2;
+	BANKSEL	_achar0
+	INCF	_achar0,F
+	INCF	_achar0,F
+	BANKSEL	_achar1
+	DECF	_achar1,F
+;	.line	27; "main.c"	for(achar1 = 0; achar1 < 100; achar1++)
+	MOVLW	0x00
+	IORWF	_achar1,W
+	BTFSS	STATUS,2
+	GOTO	_00115_DS_
+	MOVLW	0x64
+	MOVWF	_achar1
+;	.line	31; "main.c"	failures++;
+	BANKSEL	_failures
+	INCF	_failures,F
+	RETURN	
+; exit point of _zadd_lit2uchar
+
+
+;	code size estimation:
+;	   79+   13 =    92 instructions (  210 byte)
+
+	end
